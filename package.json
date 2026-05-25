@@ -1,0 +1,28 @@
+{
+  "name": "pi-memory",
+  "version": "1.0.0",
+  "description": "File-based persistent memory for AI coding agents",
+  "keywords": ["pi-package"],
+  "type": "commonjs",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEemit"
+  },
+  "dependencies": {
+    "@pi-atelier/shared-utils": "file:../pi-shared-utils",
+    "@sinclair/typebox": "^0.34.49"
+  },
+  "bundledDependencies": ["@pi-atelier/shared-utils"],
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5"
+  },
+  "pi": {
+    "extensions": ["."],
+    "skills": ["skills"],
+    "prompts": ["prompts"]
+  }
+}
