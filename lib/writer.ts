@@ -7,7 +7,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { scanMemoryDir } from "@pi-atelier/shared-utils";
+import { scanMemoryDir } from "./memory-parser";
 import { MAX_FILE_LINES } from "./types";
 
 /**

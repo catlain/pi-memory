@@ -4,7 +4,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { parseFileName } from "@pi-atelier/shared-utils";
+import { parseFileName } from "./memory-parser";
 
 /** 检测同目录中与目标文件存在 topic 或关键词重叠的文件 */
 export function detectConflicts(

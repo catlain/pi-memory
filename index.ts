@@ -17,7 +17,7 @@ import { Type } from "@sinclair/typebox";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { AGENT_DIR, MAX_FILE_LINES, HARD_FILE_LIMIT, SOFT_FILE_LIMIT, HINT_FILE_LIMIT } from "./lib/types";
-import { scanMemoryDir, parseFileName, type MemoryEntry } from "@pi-atelier/shared-utils";
+import { scanMemoryDir, parseFileName, type MemoryEntry } from "./lib/memory-parser";
 import { rebuildIndex } from "./lib/writer";
 import { registerMemoryHook } from "./lib/memory-hook";
 import { detectConflicts } from "./lib/conflict-detect";
