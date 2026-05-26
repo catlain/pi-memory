@@ -1,3 +1,5 @@
+[English](README.en.md) | 程序中文文档
+
 # pi-memory
 
 为 [pi](https://github.com/earendil-works/pi-coding-agent) 提供跨会话持久记忆。
