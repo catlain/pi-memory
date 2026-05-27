@@ -1,7 +1,7 @@
-import { defineConfig } from "vitest/config";
+import { createConfig } from "../vitest.config.base";
 
-export default defineConfig({
-  test: {
-    globals: true,
-  },
+export default createConfig({
+	test: {
+		globals: true,
+	},
 });
