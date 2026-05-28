@@ -20,8 +20,7 @@ const MAX_MEMORY_BYTES = 25_000;
 export function readMemoryFile(filePath: string): string {
 	try {
 		if (fs.existsSync(filePath)) return fs.readFileSync(filePath, "utf-8").trim();
-	} catch {
-		/* ignore */
+	} catch { // 文件不存在或权限异常 → 降级为空字符串
 	}
 	return "";
 }

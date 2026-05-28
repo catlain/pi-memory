@@ -78,7 +78,7 @@ export function scanMemoryDir(dir: string, scope: "L1" | "L2"): MemoryEntry[] {
 				topic: parsed.topic,
 				keywords: parsed.keywords,
 			});
-		} catch {
+		} catch { // 文件读取失败 → 用降级信息填充
 			entries.push({
 				name: file.replace(".md", ""),
 				file,
