@@ -131,19 +131,14 @@ describe("scanMemoryDir", () => {
 		expect(result[0].description).toBe("");
 	});
 
-	it("读取失败时标记 (读取失败)", () => {
-		// 创建一个无读权限的目录，然后放一个无法读取的文件（只创建目录名，内容放文件名）
-		const subDir = path.join(TMP_DIR, "subdir");
-		fs.mkdirSync(subDir, { recursive: true });
-		// 直接用 fs 模拟：创建一个有效的 .md 文件，但通过权限来触发 catch
-		// 简化测试：这个 case 依赖 fs.readFileSync 抛错，跳过复杂 mock
-		// 仅验证正常路径的 lines 计数
-		fs.writeFileSync(
-			path.join(TMP_DIR, "multiline--a,b.md"),
-			"line1\nline2\nline3\n",
-			"utf-8",
-		);
+	it("readFileSync 抛出异常时用 (读取失败) 降级", () => {
+		// 创建一个目录名为 foo.md 的目录
+		// readdirSync 会返回它（endsWith .md），但 readFileSync 会抛出 EISDIR
+		fs.mkdirSync(path.join(TMP_DIR, "broken--x.md"), { recursive: true });
+
 		const result = scanMemoryDir(TMP_DIR, "L2");
-		expect(result[0].lines).toBe(4); // 3 行 + 空 trailing
+		expect(result).toHaveLength(1);
+		expect(result[0].description).toBe("(读取失败)");
+		expect(result[0].lines).toBe(0);
 	});
 });
