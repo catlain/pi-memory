@@ -1,3 +1,5 @@
+> 📖 **[pi-atelier 实战指南](https://catlain.github.io/pi-atelier/)** — 从零教会你使用 pi-atelier 扩展生态，包含完整示例和最佳实践。
+
 [English](README.en.md) | 程序中文文档
 
 # pi-memory

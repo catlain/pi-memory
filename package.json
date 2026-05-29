@@ -1,5 +1,5 @@
 {
-  "name": "pi-memory",
+  "name": "pi-ate-memory",
   "version": "1.0.0",
   "description": "File-based persistent memory for AI coding agents",
   "keywords": [
@@ -47,5 +47,14 @@
     "README.en.md",
     "tsconfig.json",
     "package.json"
-  ]
+  ],
+  "homepage": "https://catlain.github.io/pi-atelier/",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:catlain/pi-memory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/catlain/pi-memory/issues"
+  },
+  "license": "MIT"
 }
