@@ -2,6 +2,8 @@
 
 # pi-memory
 
+[Source Code](https://github.com/catlain/pi-memory) | [npm](https://www.npmjs.com/package/pi-ate-memory)
+
 Persistent cross-session memory for [pi](https://github.com/earendil-works/pi-coding-agent).
 
 Every AI agent conversation starts from scratch — it doesn't remember what was discussed yesterday, what pitfalls were hit, or what decisions were made. pi-memory solves this using the filesystem: it lets the agent maintain a knowledge base automatically, and loads it into every new session without manual intervention.
@@ -53,6 +55,8 @@ Scans the memory directories and returns a structured index table.
 **Example output**:
 ```
 # Memory Index
+
+[Source Code](https://github.com/catlain/pi-memory) | [npm](https://www.npmjs.com/package/pi-ate-memory)
 
 ## L1 — ~/.pi/agent/memory
 
@@ -124,6 +128,8 @@ Markdown format, with the title describing the topic:
 ```markdown
 # Coding Standards & File Formatting
 
+[Source Code](https://github.com/catlain/pi-memory) | [npm](https://www.npmjs.com/package/pi-ate-memory)
+
 Keywords: coding git lint format
 
 ## Core Rules
@@ -141,6 +147,8 @@ Keywords: coding git lint format
 
 ```markdown
 # Memory Index
+
+[Source Code](https://github.com/catlain/pi-memory) | [npm](https://www.npmjs.com/package/pi-ate-memory)
 
 > Auto-generated — lists all memory files and their keyword summaries
 

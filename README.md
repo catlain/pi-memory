@@ -4,6 +4,8 @@
 
 # pi-memory
 
+[源码仓库](https://github.com/catlain/pi-memory) | [npm](https://www.npmjs.com/package/pi-ate-memory)
+
 为 [pi](https://github.com/earendil-works/pi-coding-agent) 提供跨会话持久记忆。
 
 AI agent 的每次对话都是全新开始——不记得昨天讨论了什么、踩过哪些坑、做过什么决策。pi-memory 用文件系统解决这个问题：让 agent 自动维护一个知识库，每次新会话自动加载。
@@ -55,6 +57,8 @@ pi install git:github.com/catlain/pi-memory
 **输出示例**：
 ```
 # 记忆文件索引
+
+[源码仓库](https://github.com/catlain/pi-memory) | [npm](https://www.npmjs.com/package/pi-ate-memory)
 
 ## L1 — ~/.pi/agent/memory
 
@@ -126,6 +130,8 @@ Markdown 格式，标题即主题描述：
 ```markdown
 # 编码规范与文件格式
 
+[源码仓库](https://github.com/catlain/pi-memory) | [npm](https://www.npmjs.com/package/pi-ate-memory)
+
 关键词: 编码 git lint 格式
 
 ## 核心规则
@@ -143,6 +149,8 @@ Markdown 格式，标题即主题描述：
 
 ```markdown
 # Memory Index
+
+[源码仓库](https://github.com/catlain/pi-memory) | [npm](https://www.npmjs.com/package/pi-ate-memory)
 
 > 自动生成 — 列出所有记忆文件及其关键词摘要
 
