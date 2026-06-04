@@ -2,8 +2,8 @@
  * Memory Tools — 公共类型与常量
  */
 
-import * as path from "node:path";
 import { homedir } from "node:os";
+import * as path from "node:path";
 
 export interface MemoryEntry {
 	name: string;

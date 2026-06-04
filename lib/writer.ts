@@ -18,7 +18,11 @@ import { MAX_FILE_LINES } from "./types";
  *
  * 这是保证「索引 === 磁盘」的唯一函数。
  */
-export function rebuildIndex(targetDir: string, indexPath: string, scope: "L1" | "L2"): void {
+export function rebuildIndex(
+	targetDir: string,
+	indexPath: string,
+	scope: "L1" | "L2",
+): void {
 	const entries = scanMemoryDir(targetDir, scope);
 
 	if (entries.length === 0) {

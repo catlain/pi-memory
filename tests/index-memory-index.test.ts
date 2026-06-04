@@ -1,14 +1,14 @@
 /**
  * index.ts — memory_index execute 测试
- * 
+ *
  * 测试 memory_index 工具在不同 scope 下的行为。
  * 使用 real fs + 临时目录验证。
  */
 
-import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as fs from "node:fs";
-import * as path from "node:path";
 import * as os from "node:os";
+import * as path from "node:path";
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 const TMP_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "mem-index-test-"));
 
@@ -45,7 +45,9 @@ describe("memory_index execute", () => {
 	it("L2 scope 无文件时返回空", async () => {
 		const execute = await getMemoryIndex();
 		// L2 目录不存在 → 返回空
-		const result = await execute("id", { scope: "L2" }, undefined, undefined, { cwd: TMP_DIR });
+		const result = await execute("id", { scope: "L2" }, undefined, undefined, {
+			cwd: TMP_DIR,
+		});
 		expect(result.content[0].text).toBe("未找到任何记忆文件。");
 	});
 
@@ -59,7 +61,9 @@ describe("memory_index execute", () => {
 		);
 
 		const execute = await getMemoryIndex();
-		const result = await execute("id", { scope: "L2" }, undefined, undefined, { cwd });
+		const result = await execute("id", { scope: "L2" }, undefined, undefined, {
+			cwd,
+		});
 		const text = result.content[0].text;
 		expect(text).toContain("Test Topic");
 		expect(text).toContain("L2");
@@ -68,7 +72,9 @@ describe("memory_index execute", () => {
 
 	it("L1 scope 返回结果（真实 L1 目录）", async () => {
 		const execute = await getMemoryIndex();
-		const result = await execute("id", { scope: "L1" }, undefined, undefined, { cwd: TMP_DIR });
+		const result = await execute("id", { scope: "L1" }, undefined, undefined, {
+			cwd: TMP_DIR,
+		});
 		const text = result.content[0].text;
 		expect(text).toBeTruthy();
 		if (text === "未找到任何记忆文件。") {
@@ -88,7 +94,9 @@ describe("memory_index execute", () => {
 		);
 
 		const execute = await getMemoryIndex();
-		const result = await execute("id", { scope: "all" }, undefined, undefined, { cwd });
+		const result = await execute("id", { scope: "all" }, undefined, undefined, {
+			cwd,
+		});
 		const text = result.content[0].text;
 		expect(text).toContain("L2");
 		if (text !== "未找到任何记忆文件。") {
@@ -99,11 +107,21 @@ describe("memory_index execute", () => {
 	it("多个文件按字母序排列", async () => {
 		const cwd = TMP_DIR;
 		fs.mkdirSync(l2Dir(cwd), { recursive: true });
-		fs.writeFileSync(path.join(l2Dir(cwd), "beta--b.md"), "# Beta\n内容", "utf-8");
-		fs.writeFileSync(path.join(l2Dir(cwd), "alpha--a.md"), "# Alpha\n内容", "utf-8");
+		fs.writeFileSync(
+			path.join(l2Dir(cwd), "beta--b.md"),
+			"# Beta\n内容",
+			"utf-8",
+		);
+		fs.writeFileSync(
+			path.join(l2Dir(cwd), "alpha--a.md"),
+			"# Alpha\n内容",
+			"utf-8",
+		);
 
 		const execute = await getMemoryIndex();
-		const result = await execute("id", { scope: "L2" }, undefined, undefined, { cwd });
+		const result = await execute("id", { scope: "L2" }, undefined, undefined, {
+			cwd,
+		});
 		const text = result.content[0].text;
 		const alphaIdx = text.indexOf("Alpha");
 		const betaIdx = text.indexOf("Beta");

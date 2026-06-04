@@ -4,7 +4,11 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { ExtensionAPI, BeforeAgentStartEvent, BeforeAgentStartEventResult } from "@earendil-works/pi-coding-agent";
+import type {
+	BeforeAgentStartEvent,
+	BeforeAgentStartEventResult,
+	ExtensionAPI,
+} from "@earendil-works/pi-coding-agent";
 import { resolveMemoryInjection } from "./memory-inject";
 
 /**
@@ -19,19 +23,25 @@ export function registerMemoryHook(pi: ExtensionAPI): void {
 		if (fs.existsSync(memoryPromptPath)) {
 			memoryPrompt = fs.readFileSync(memoryPromptPath, "utf-8").trim();
 		}
-	} catch { // 文件不存在或权限异常 → 跳过注入
+	} catch {
+		// 文件不存在或权限异常 → 跳过注入
 		/* ignore */
 	}
 
 	if (!memoryPrompt) return;
 
-	pi.on("before_agent_start", async (event: BeforeAgentStartEvent): Promise<BeforeAgentStartEventResult> => {
-		const cwd = event.systemPromptOptions?.cwd || process.cwd();
-		const injection = resolveMemoryInjection(cwd);
-		const parts = [memoryPrompt];
-		if (injection) parts.push(injection);
-		return {
-			systemPrompt: event.systemPrompt + "\n\n" + parts.join("\n\n"),
-		};
-	});
+	pi.on(
+		"before_agent_start",
+		async (
+			event: BeforeAgentStartEvent,
+		): Promise<BeforeAgentStartEventResult> => {
+			const cwd = event.systemPromptOptions?.cwd || process.cwd();
+			const injection = resolveMemoryInjection(cwd);
+			const parts = [memoryPrompt];
+			if (injection) parts.push(injection);
+			return {
+				systemPrompt: `${event.systemPrompt}\n\n${parts.join("\n\n")}`,
+			};
+		},
+	);
 }

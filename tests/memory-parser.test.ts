@@ -2,11 +2,15 @@
  * memory-parser.ts 测试 — 文件名解析与目录扫描
  */
 
-import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import * as fs from "node:fs";
-import * as path from "node:path";
 import * as os from "node:os";
-import { parseFileName, buildFileName, scanMemoryDir } from "../lib/memory-parser";
+import * as path from "node:path";
+import { afterAll, beforeEach, describe, expect, it } from "vitest";
+import {
+	buildFileName,
+	parseFileName,
+	scanMemoryDir,
+} from "../lib/memory-parser";
 
 const TMP_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "memory-parser-test-"));
 
@@ -64,7 +68,9 @@ describe("parseFileName", () => {
 
 describe("buildFileName", () => {
 	it("生成标准格式", () => {
-		expect(buildFileName("coding", ["git", "lint"])).toBe("coding--git,lint.md");
+		expect(buildFileName("coding", ["git", "lint"])).toBe(
+			"coding--git,lint.md",
+		);
 	});
 
 	it("无关键词时不带 --", () => {
@@ -120,13 +126,21 @@ describe("scanMemoryDir", () => {
 	});
 
 	it("L1 scope 正确传递", () => {
-		fs.writeFileSync(path.join(TMP_DIR, "global--test.md"), "# Test\n", "utf-8");
+		fs.writeFileSync(
+			path.join(TMP_DIR, "global--test.md"),
+			"# Test\n",
+			"utf-8",
+		);
 		const result = scanMemoryDir(TMP_DIR, "L1");
 		expect(result[0].scope).toBe("L1");
 	});
 
 	it("无标题行时 description 为空字符串", () => {
-		fs.writeFileSync(path.join(TMP_DIR, "notitle--x.md"), "没有标题行", "utf-8");
+		fs.writeFileSync(
+			path.join(TMP_DIR, "notitle--x.md"),
+			"没有标题行",
+			"utf-8",
+		);
 		const result = scanMemoryDir(TMP_DIR, "L2");
 		expect(result[0].description).toBe("");
 	});

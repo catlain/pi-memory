@@ -30,7 +30,10 @@ export interface MemoryEntry {
  * 格式：topic--kw1,kw2,kw3.md
  * 无 -- 时 topic = basename（兼容旧格式）
  */
-export function parseFileName(fileName: string): { topic: string; keywords: string[] } {
+export function parseFileName(fileName: string): {
+	topic: string;
+	keywords: string[];
+} {
 	if (fileName == null) return { topic: "", keywords: [] };
 	const base = fileName.replace(/\.md$/, "");
 	const idx = base.indexOf("--");
@@ -57,8 +60,9 @@ export function scanMemoryDir(dir: string, scope: "L1" | "L2"): MemoryEntry[] {
 	const entries: MemoryEntry[] = [];
 	if (!fs.existsSync(dir)) return entries;
 
-	const files = fs.readdirSync(dir)
-		.filter(f => f.endsWith(".md") && f !== "MEMORY.md")
+	const files = fs
+		.readdirSync(dir)
+		.filter((f) => f.endsWith(".md") && f !== "MEMORY.md")
 		.sort();
 
 	for (const file of files) {
@@ -66,7 +70,7 @@ export function scanMemoryDir(dir: string, scope: "L1" | "L2"): MemoryEntry[] {
 		try {
 			const content = fs.readFileSync(filePath, "utf-8");
 			const lines = content.split("\n").length;
-			const titleLine = content.split("\n").find(l => l.startsWith("# "));
+			const titleLine = content.split("\n").find((l) => l.startsWith("# "));
 			const description = titleLine?.replace(/^#\s+/, "") || "";
 			const parsed = parseFileName(file);
 			entries.push({
@@ -78,7 +82,8 @@ export function scanMemoryDir(dir: string, scope: "L1" | "L2"): MemoryEntry[] {
 				topic: parsed.topic,
 				keywords: parsed.keywords,
 			});
-		} catch { // 文件读取失败 → 用降级信息填充
+		} catch {
+			// 文件读取失败 → 用降级信息填充
 			entries.push({
 				name: file.replace(".md", ""),
 				file,

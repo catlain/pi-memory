@@ -23,14 +23,20 @@ export function detectConflicts(
 
 		// 同 topic → 冲突
 		if (existing.topic === newTopic) {
-			const lines = fs.readFileSync(path.join(dir, f), "utf-8").split("\n").length;
+			const lines = fs
+				.readFileSync(path.join(dir, f), "utf-8")
+				.split("\n").length;
 			results.push({ name: f, reason: `同topic, ${lines}行` });
 			continue;
 		}
 		// 关键词重叠 ≥ 3 → 冲突
-		const overlap = existing.keywords.filter((k: string) => newKeywords.has(k)).length;
+		const overlap = existing.keywords.filter((k: string) =>
+			newKeywords.has(k),
+		).length;
 		if (overlap >= 3) {
-			const lines = fs.readFileSync(path.join(dir, f), "utf-8").split("\n").length;
+			const lines = fs
+				.readFileSync(path.join(dir, f), "utf-8")
+				.split("\n").length;
 			results.push({ name: f, reason: `${overlap}关键词重叠, ${lines}行` });
 		}
 	}

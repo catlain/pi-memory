@@ -1,13 +1,12 @@
 /**
  * index.ts — memory_update L1 scope 测试
- * 
+ *
  * 通过 vi.mock("types") 重定向 AGENT_DIR 到临时目录，
  * 覆盖 L1 scope 的 targetDir / indexPath 分支。
  */
 
-import { describe, it, expect, afterAll, vi } from "vitest";
 import * as path from "node:path";
-import * as os from "node:os";
+import { afterAll, describe, expect, it, vi } from "vitest";
 
 // ── 用 vi.hoisted 创建临时 AGENT_DIR ──────────────────────
 
@@ -53,7 +52,9 @@ afterAll(() => {
 	try {
 		const mod_fs = require("node:fs");
 		mod_fs.rmSync(TEST_AGENT_DIR, { recursive: true, force: true });
-	} catch { /* ignore */ }
+	} catch {
+		/* ignore */
+	}
 });
 
 describe("memory_update L1 scope", () => {

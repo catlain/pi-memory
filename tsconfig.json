@@ -1,10 +1,10 @@
 {
-  "extends": "../tsconfig.base.json",
-  "compilerOptions": {
-    "module": "ES2022",
-    "outDir": "dist",
-    "rootDir": ".",
-    "types": ["node", "vitest/globals"]
-  },
-  "include": ["index.ts", "lib/**/*.ts", "tests/**/*.ts"]
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"module": "ES2022",
+		"outDir": "dist",
+		"rootDir": ".",
+		"types": ["node", "vitest/globals"]
+	},
+	"include": ["index.ts", "lib/**/*.ts", "tests/**/*.ts"]
 }

@@ -1,10 +1,10 @@
 /**
  * index.ts 测试 — 工具注册
- * 
+ *
  * 验证 memoryToolsExtension 正确注册两个工具（memory_index / memory_update）。
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("工具注册", () => {
 	it("注册 memory_index 和 memory_update 两个工具", async () => {
@@ -45,10 +45,14 @@ describe("工具注册", () => {
 		const mod = await import("../index");
 		mod.default(mockPi as any);
 
-		const indexTool = registerTool.mock.calls.find((c: any[]) => c[0].name === "memory_index")[0];
+		const indexTool = registerTool.mock.calls.find(
+			(c: any[]) => c[0].name === "memory_index",
+		)[0];
 		expect(indexTool.parameters).toBeTruthy();
 
-		const updateTool = registerTool.mock.calls.find((c: any[]) => c[0].name === "memory_update")[0];
+		const updateTool = registerTool.mock.calls.find(
+			(c: any[]) => c[0].name === "memory_update",
+		)[0];
 		expect(updateTool.parameters).toBeTruthy();
 	});
 });

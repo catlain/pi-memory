@@ -1,11 +1,11 @@
 /**
  * memory-hook.ts 测试 — before_agent_start hook 注册
- * 
+ *
  * 使用 vi.mock("node:fs") 控制文件存在性和内容。
  * 注意：vi.spyOn 对 ESM 模块（node:fs）不适用，必须用 vi.mock。
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // ── Mock node:fs ──────────────────────────────────────────
 
@@ -99,7 +99,9 @@ describe("registerMemoryHook", () => {
 
 	it("注册的 handler 正确拼接 systemPrompt", async () => {
 		// memory-prompt.md 存在
-		mockExistsSync.mockImplementation((p: string) => p.includes("memory-prompt.md"));
+		mockExistsSync.mockImplementation((p: string) =>
+			p.includes("memory-prompt.md"),
+		);
 		mockReadFileSync.mockImplementation((p: string) => {
 			if (p.includes("memory-prompt.md")) return "# Memory\n\n记忆说明文本。";
 			return "";
@@ -121,7 +123,9 @@ describe("registerMemoryHook", () => {
 	});
 
 	it("handler 使用 event.systemPromptOptions.cwd", async () => {
-		mockExistsSync.mockImplementation((p: string) => p.includes("memory-prompt.md"));
+		mockExistsSync.mockImplementation((p: string) =>
+			p.includes("memory-prompt.md"),
+		);
 		mockReadFileSync.mockImplementation((p: string) => {
 			if (p.includes("memory-prompt.md")) return "# Memory\n\n记忆说明。";
 			return "";
@@ -142,7 +146,9 @@ describe("registerMemoryHook", () => {
 	});
 
 	it("handler 在 systemPromptOptions 为空时用 process.cwd()", async () => {
-		mockExistsSync.mockImplementation((p: string) => p.includes("memory-prompt.md"));
+		mockExistsSync.mockImplementation((p: string) =>
+			p.includes("memory-prompt.md"),
+		);
 		mockReadFileSync.mockImplementation((p: string) => {
 			if (p.includes("memory-prompt.md")) return "# Memory\n\n记忆说明。";
 			return "";
@@ -163,8 +169,8 @@ describe("registerMemoryHook", () => {
 
 	it("handler 在有记忆注入时正确拼接", async () => {
 		// memory-prompt.md 和 MEMORY.md（L1/L2）都存在
-		mockExistsSync.mockImplementation((p: string) =>
-			p.includes("memory-prompt.md") || p.includes("MEMORY.md"),
+		mockExistsSync.mockImplementation(
+			(p: string) => p.includes("memory-prompt.md") || p.includes("MEMORY.md"),
 		);
 		mockReadFileSync.mockImplementation((p: string) => {
 			if (p.includes("memory-prompt.md")) return "# Memory\n说明";

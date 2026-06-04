@@ -19,8 +19,10 @@ const MAX_MEMORY_BYTES = 25_000;
 /** 读取文件，成功返回 trim 内容，否则空字符串 */
 export function readMemoryFile(filePath: string): string {
 	try {
-		if (fs.existsSync(filePath)) return fs.readFileSync(filePath, "utf-8").trim();
-	} catch { // 文件不存在或权限异常 → 降级为空字符串
+		if (fs.existsSync(filePath))
+			return fs.readFileSync(filePath, "utf-8").trim();
+	} catch {
+		// 文件不存在或权限异常 → 降级为空字符串
 	}
 	return "";
 }
@@ -54,7 +56,7 @@ export function buildMemoryPrompt(
 	if (globalMemory) entries.push(globalMemory);
 	if (projectMemory) entries.push(projectMemory);
 	if (entries.length === 0) return null;
-	return "## 记忆\n\n" + entries.join("\n\n");
+	return `## 记忆\n\n${entries.join("\n\n")}`;
 }
 
 /**

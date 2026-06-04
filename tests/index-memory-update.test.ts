@@ -1,14 +1,14 @@
 /**
  * index.ts — memory_update execute 测试
- * 
+ *
  * 测试 memory_update 工具的各种场景：
  * 新建/覆盖、安全检查（路径/大小/行数）、文件限制、冲突检测。
  */
 
-import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as fs from "node:fs";
-import * as path from "node:path";
 import * as os from "node:os";
+import * as path from "node:path";
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 const TMP_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "mem-update-test-"));
 
@@ -68,7 +68,11 @@ describe("memory_update execute — 基本写入", () => {
 	it("覆盖已有文件", async () => {
 		const cwd = TMP_DIR;
 		fs.mkdirSync(l2Dir(cwd), { recursive: true });
-		fs.writeFileSync(path.join(l2Dir(cwd), "test--a.md"), "# Old\n旧内容", "utf-8");
+		fs.writeFileSync(
+			path.join(l2Dir(cwd), "test--a.md"),
+			"# Old\n旧内容",
+			"utf-8",
+		);
 
 		const execute = await getMemoryUpdate();
 		const result = await execute(
@@ -80,7 +84,9 @@ describe("memory_update execute — 基本写入", () => {
 		);
 		expect(result.content[0].text).toContain("✅");
 		expect(result.content[0].text).toContain("覆盖");
-		expect(fs.readFileSync(path.join(l2Dir(cwd), "test--a.md"), "utf-8")).toContain("新内容");
+		expect(
+			fs.readFileSync(path.join(l2Dir(cwd), "test--a.md"), "utf-8"),
+		).toContain("新内容");
 	});
 });
 
@@ -117,7 +123,9 @@ describe("memory_update execute — 安全检查", () => {
 	it("拒绝超过 200 行的内容", async () => {
 		const cwd = TMP_DIR;
 		const execute = await getMemoryUpdate();
-		const longContent = Array.from({ length: 250 }, (_, i) => `line-${i}`).join("\n");
+		const longContent = Array.from({ length: 250 }, (_, i) => `line-${i}`).join(
+			"\n",
+		);
 		const result = await execute(
 			"id",
 			{ fileName: "long--file.md", content: longContent, scope: "L2" },
@@ -135,7 +143,11 @@ describe("memory_update execute — 文件数限制", () => {
 		const cwd = TMP_DIR;
 		fs.mkdirSync(l2Dir(cwd), { recursive: true });
 		for (let i = 0; i < 40; i++) {
-			fs.writeFileSync(path.join(l2Dir(cwd), `file${i}--a.md`), `# File ${i}\n`, "utf-8");
+			fs.writeFileSync(
+				path.join(l2Dir(cwd), `file${i}--a.md`),
+				`# File ${i}\n`,
+				"utf-8",
+			);
 		}
 
 		const execute = await getMemoryUpdate();
@@ -154,7 +166,11 @@ describe("memory_update execute — 文件数限制", () => {
 		const cwd = TMP_DIR;
 		fs.mkdirSync(l2Dir(cwd), { recursive: true });
 		for (let i = 0; i < 40; i++) {
-			fs.writeFileSync(path.join(l2Dir(cwd), `file${i}--a.md`), `# File ${i}\n`, "utf-8");
+			fs.writeFileSync(
+				path.join(l2Dir(cwd), `file${i}--a.md`),
+				`# File ${i}\n`,
+				"utf-8",
+			);
 		}
 
 		const execute = await getMemoryUpdate();
@@ -173,12 +189,20 @@ describe("memory_update execute — 冲突检测", () => {
 	it("同 topic 冲突并拒绝", async () => {
 		const cwd = TMP_DIR;
 		fs.mkdirSync(l2Dir(cwd), { recursive: true });
-		fs.writeFileSync(path.join(l2Dir(cwd), "coding--git.md"), "# Coding\n内容", "utf-8");
+		fs.writeFileSync(
+			path.join(l2Dir(cwd), "coding--git.md"),
+			"# Coding\n内容",
+			"utf-8",
+		);
 
 		const execute = await getMemoryUpdate();
 		const result = await execute(
 			"id",
-			{ fileName: "coding--new.md", content: "# Coding v2\n新内容", scope: "L2" },
+			{
+				fileName: "coding--new.md",
+				content: "# Coding v2\n新内容",
+				scope: "L2",
+			},
 			undefined,
 			undefined,
 			{ cwd },
@@ -248,7 +272,11 @@ describe("memory_update execute — scope 与警告", () => {
 		const cwd = TMP_DIR;
 		fs.mkdirSync(l2Dir(cwd), { recursive: true });
 		for (let i = 0; i < 22; i++) {
-			fs.writeFileSync(path.join(l2Dir(cwd), `file${i}--x.md`), `# File ${i}\n`, "utf-8");
+			fs.writeFileSync(
+				path.join(l2Dir(cwd), `file${i}--x.md`),
+				`# File ${i}\n`,
+				"utf-8",
+			);
 		}
 
 		const execute = await getMemoryUpdate();
@@ -266,7 +294,11 @@ describe("memory_update execute — scope 与警告", () => {
 		const cwd = TMP_DIR;
 		fs.mkdirSync(l2Dir(cwd), { recursive: true });
 		for (let i = 0; i < 26; i++) {
-			fs.writeFileSync(path.join(l2Dir(cwd), `file${i}--x.md`), `# File ${i}\n`, "utf-8");
+			fs.writeFileSync(
+				path.join(l2Dir(cwd), `file${i}--x.md`),
+				`# File ${i}\n`,
+				"utf-8",
+			);
 		}
 
 		const execute = await getMemoryUpdate();

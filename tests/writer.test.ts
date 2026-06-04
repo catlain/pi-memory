@@ -2,11 +2,11 @@
  * writer.ts 测试 — 索引重建与行数检查
  */
 
-import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import * as fs from "node:fs";
-import * as path from "node:path";
 import * as os from "node:os";
-import { rebuildIndex, checkLineCount } from "../lib/writer";
+import * as path from "node:path";
+import { afterAll, beforeEach, describe, expect, it } from "vitest";
+import { checkLineCount, rebuildIndex } from "../lib/writer";
 
 const TMP_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "memory-writer-test-"));
 const INDEX_PATH = path.join(TMP_DIR, "MEMORY.md");
@@ -57,11 +57,7 @@ describe("rebuildIndex", () => {
 	});
 
 	it("跳过 MEMORY.md 文件", () => {
-		fs.writeFileSync(
-			path.join(TMP_DIR, "MEMORY.md"),
-			"# Index\n",
-			"utf-8",
-		);
+		fs.writeFileSync(path.join(TMP_DIR, "MEMORY.md"), "# Index\n", "utf-8");
 		fs.writeFileSync(
 			path.join(TMP_DIR, "real--data.md"),
 			"# Real\n\n内容",
