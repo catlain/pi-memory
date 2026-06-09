@@ -37,7 +37,12 @@ async function getMemoryUpdate(): Promise<Function> {
 
 beforeEach(() => {
 	for (const e of fs.readdirSync(TMP_DIR)) {
-		fs.rmSync(path.join(TMP_DIR, e), { recursive: true, force: true });
+		const p = path.join(TMP_DIR, e);
+		if (fs.statSync(p).isDirectory()) {
+			fs.rmSync(p, { recursive: true, force: true });
+		} else {
+			fs.unlinkSync(p);
+		}
 	}
 });
 
@@ -311,5 +316,78 @@ describe("memory_update execute — scope 与警告", () => {
 		);
 		expect(result.content[0].text).toContain("⚠️");
 		expect(result.content[0].text).toContain("接近");
+	});
+});
+
+describe("memory_update execute — 写入后回读验证", () => {
+	it("新建文件后 MEMORY.md 索引包含正确条目", async () => {
+		const cwd = TMP_DIR;
+		const execute = await getMemoryUpdate();
+		await execute(
+			"id",
+			{ fileName: "roundtrip--git,lint.md", content: "# 编码规范\n\n关键词：`git` `lint`\n\n内容", scope: "L2" },
+			undefined,
+			undefined,
+			{ cwd },
+		);
+
+		const indexPath = l2Index(cwd);
+		expect(fs.existsSync(indexPath)).toBe(true);
+		const indexContent = fs.readFileSync(indexPath, "utf-8");
+		expect(indexContent).toContain("roundtrip");
+		expect(indexContent).toContain("git, lint");
+		expect(indexContent).toContain("[roundtrip](roundtrip--git,lint.md)");
+
+		const filePath = path.join(l2Dir(cwd), "roundtrip--git,lint.md");
+		const fileContent = fs.readFileSync(filePath, "utf-8");
+		expect(fileContent).toBe("# 编码规范\n\n关键词：`git` `lint`\n\n内容");
+	});
+
+	it("覆盖文件后索引仍包含旧条目（不重复）", async () => {
+		const cwd = TMP_DIR;
+		const memDir = l2Dir(cwd);
+		fs.mkdirSync(memDir, { recursive: true });
+		fs.writeFileSync(path.join(memDir, "overwrite--a.md"), "# Old\n旧内容", "utf-8");
+
+		const execute = await getMemoryUpdate();
+		await execute(
+			"id",
+			{ fileName: "overwrite--a.md", content: "# New\n新内容", scope: "L2" },
+			undefined,
+			undefined,
+			{ cwd },
+		);
+
+		const indexContent = fs.readFileSync(l2Index(cwd), "utf-8");
+		const occurrences = indexContent.split("overwrite--a.md").length - 1;
+		expect(occurrences).toBe(1);
+	});
+
+	it("多文件写入后索引文件数与实际文件数一致", async () => {
+		const cwd = TMP_DIR;
+		const execute = await getMemoryUpdate();
+
+		const files = [
+			{ name: "multi1--x.md", content: "# M1\n内容1" },
+			{ name: "multi2--y.md", content: "# M2\n内容2" },
+			{ name: "multi3--z.md", content: "# M3\n内容3" },
+		];
+
+		for (const f of files) {
+			await execute(
+				"id",
+				{ fileName: f.name, content: f.content, scope: "L2" },
+				undefined,
+				undefined,
+				{ cwd },
+			);
+		}
+
+		const indexContent = fs.readFileSync(l2Index(cwd), "utf-8");
+		expect(indexContent).toContain("文件清单 (3)");
+
+		const memDir = l2Dir(cwd);
+		const mdFiles = fs.readdirSync(memDir).filter((f) => f !== "MEMORY.md");
+		expect(mdFiles.length).toBe(3);
 	});
 });

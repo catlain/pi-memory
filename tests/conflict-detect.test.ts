@@ -12,7 +12,12 @@ const TMP_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "conflict-detect-test-"));
 
 beforeEach(() => {
 	for (const e of fs.readdirSync(TMP_DIR)) {
-		fs.rmSync(path.join(TMP_DIR, e), { recursive: true, force: true });
+		const p = path.join(TMP_DIR, e);
+		if (fs.statSync(p).isDirectory()) {
+			fs.rmSync(p, { recursive: true, force: true });
+		} else {
+			fs.unlinkSync(p);
+		}
 	}
 });
 
