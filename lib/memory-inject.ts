@@ -67,7 +67,7 @@ export function resolveMemoryInjection(cwd: string): string | null {
 	const l1Path = path.join(AGENT_DIR, "MEMORY.md");
 	const l2Path = path.join(cwd, ".pi", "memory", "MEMORY.md");
 
-	const globalMemory = readMemoryFile(l1Path);
+	const globalMemory = truncateMemory(readMemoryFile(l1Path));
 	const projectMemory = truncateMemory(readMemoryFile(l2Path));
 
 	return buildMemoryPrompt(globalMemory, projectMemory);

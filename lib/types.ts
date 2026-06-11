@@ -5,14 +5,6 @@
 import { homedir } from "node:os";
 import * as path from "node:path";
 
-export interface MemoryEntry {
-	name: string;
-	file: string;
-	description: string;
-	lines: number;
-	scope: "L1" | "L2";
-}
-
 /** L1 全局目录 */
 export const AGENT_DIR = path.join(homedir(), ".pi/agent");
 
