@@ -50,12 +50,6 @@ export function rebuildIndex(
 		lines.push(`| ${i + 1} | ${e.topic} | ${kws} |`);
 	}
 
-	lines.push("");
-
-	for (const e of entries) {
-		lines.push(`- [${e.topic}](${e.file})`);
-	}
-
 	lines.push(""); // trailing newline
 
 	fs.mkdirSync(path.dirname(indexPath), { recursive: true });

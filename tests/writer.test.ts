@@ -57,8 +57,9 @@ describe("rebuildIndex", () => {
 		expect(content).toContain("## 文件清单 (2)");
 		expect(content).toContain("| coding | git, lint |");
 		expect(content).toContain("| debug | uvicorn |");
-		expect(content).toContain("[coding](coding--git,lint.md)");
-		expect(content).toContain("[debug](debug--uvicorn.md)");
+		// 链接列表与表格重复，已移除
+		expect(content).not.toContain("[coding](coding--git,lint.md)");
+		expect(content).not.toContain("- [");
 	});
 
 	it("跳过 MEMORY.md 文件", () => {

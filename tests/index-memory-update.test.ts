@@ -336,7 +336,8 @@ describe("memory_update execute — 写入后回读验证", () => {
 		const indexContent = fs.readFileSync(indexPath, "utf-8");
 		expect(indexContent).toContain("roundtrip");
 		expect(indexContent).toContain("git, lint");
-		expect(indexContent).toContain("[roundtrip](roundtrip--git,lint.md)");
+		// 链接列表与表格重复，已移除
+		expect(indexContent).not.toContain("- [");
 
 		const filePath = path.join(l2Dir(cwd), "roundtrip--git,lint.md");
 		const fileContent = fs.readFileSync(filePath, "utf-8");
@@ -359,7 +360,8 @@ describe("memory_update execute — 写入后回读验证", () => {
 		);
 
 		const indexContent = fs.readFileSync(l2Index(cwd), "utf-8");
-		const occurrences = indexContent.split("overwrite--a.md").length - 1;
+		// 表格中 topic 只出现一次（覆盖不产生重复条目）
+		const occurrences = indexContent.split("overwrite").length - 1;
 		expect(occurrences).toBe(1);
 	});
 
