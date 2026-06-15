@@ -45,6 +45,7 @@ export default function memoryToolsExtension(pi: ExtensionAPI) {
 			"从文件名解析 topic 和关键词，返回结构化表格。",
 			"用于：了解已有记忆、判断重复、决定是否新建文件。",
 		].join("\n"),
+		promptSnippet: "列出所有记忆文件索引",
 		parameters: Type.Object({
 			scope: Type.Optional(
 				Type.Union(
@@ -129,6 +130,7 @@ export default function memoryToolsExtension(pi: ExtensionAPI) {
 				"utf-8",
 			)
 			.trim(),
+		promptSnippet: "写入记忆文件并更新索引",
 		parameters: Type.Object({
 			fileName: Type.String({
 				description: "目标文件名，格式 topic--kw1,kw2,kw3.md",
