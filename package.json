@@ -10,7 +10,7 @@
 	"types": "index.ts",
 	"scripts": {
 		"test": "vitest run",
-		"typecheck": "tsc --noEemit"
+		"typecheck": "tsc --noEmit"
 	},
 	"peerDependencies": {
 		"@earendil-works/pi-coding-agent": ">=1.0.0"
