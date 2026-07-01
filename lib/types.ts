@@ -15,7 +15,7 @@ export const MAX_FILE_LINES = 200;
 export const MAX_MERGED_LINES = MAX_FILE_LINES * 2;
 
 /** 记忆文件总数硬限制（超过拒绝写入） */
-export const HARD_FILE_LIMIT = 40;
+export const HARD_FILE_LIMIT = 80;
 
 /** 记忆文件总数软限制（超过发出警告） */
 export const SOFT_FILE_LIMIT = 25;

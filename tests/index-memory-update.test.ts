@@ -147,7 +147,7 @@ describe("memory_update execute — 文件数限制", () => {
 	it("拒绝超过文件数硬限制", async () => {
 		const cwd = TMP_DIR;
 		fs.mkdirSync(l2Dir(cwd), { recursive: true });
-		for (let i = 0; i < 40; i++) {
+		for (let i = 0; i < 80; i++) {
 			fs.writeFileSync(
 				path.join(l2Dir(cwd), `file${i}--a.md`),
 				`# File ${i}\n`,
@@ -159,8 +159,8 @@ describe("memory_update execute — 文件数限制", () => {
 		const result = await execute(
 			"id",
 			{ fileName: "overflow--new.md", content: "# New\n内容", scope: "L2" },
-			undefined,
-			undefined,
+				undefined,
+				undefined,
 			{ cwd },
 		);
 		expect(result.content[0].text).toContain("❌");
@@ -170,7 +170,7 @@ describe("memory_update execute — 文件数限制", () => {
 	it("覆盖已有文件不触发文件数硬限制", async () => {
 		const cwd = TMP_DIR;
 		fs.mkdirSync(l2Dir(cwd), { recursive: true });
-		for (let i = 0; i < 40; i++) {
+		for (let i = 0; i < 80; i++) {
 			fs.writeFileSync(
 				path.join(l2Dir(cwd), `file${i}--a.md`),
 				`# File ${i}\n`,
