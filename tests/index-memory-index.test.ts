@@ -20,15 +20,15 @@ function l2Dir(cwd: string): string {
 let memoryIndexExecute: Function | null = null;
 
 async function getMemoryIndex(): Promise<Function> {
-	if (memoryIndexExecute) return memoryIndexExecute;
+	if (memoryIndexExecute) return memoryIndexExecute!;
 	const registerTool = vi.fn();
 	const on = vi.fn();
 	const mod = await import("../index");
 	mod.default({ registerTool, on } as any);
 	memoryIndexExecute = registerTool.mock.calls.find(
 		(c: any[]) => c[0].name === "memory_index",
-	)[0].execute;
-	return memoryIndexExecute;
+	)![0].execute;
+	return memoryIndexExecute!;
 }
 
 beforeEach(() => {

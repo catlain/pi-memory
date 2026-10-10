@@ -37,15 +37,15 @@ import * as fs from "node:fs";
 let memoryUpdateExecute: Function | null = null;
 
 async function getMemoryUpdate(): Promise<Function> {
-	if (memoryUpdateExecute) return memoryUpdateExecute;
+	if (memoryUpdateExecute) return memoryUpdateExecute!;
 	const registerTool = vi.fn();
 	const on = vi.fn();
 	const mod = await import("../index");
 	mod.default({ registerTool, on } as any);
 	memoryUpdateExecute = registerTool.mock.calls.find(
 		(c: any[]) => c[0].name === "memory_update",
-	)[0].execute;
-	return memoryUpdateExecute;
+	)![0].execute;
+	return memoryUpdateExecute!;
 }
 
 afterAll(() => {

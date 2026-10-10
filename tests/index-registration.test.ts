@@ -47,12 +47,12 @@ describe("工具注册", () => {
 
 		const indexTool = registerTool.mock.calls.find(
 			(c: any[]) => c[0].name === "memory_index",
-		)[0];
+		)![0];
 		expect(indexTool.parameters).toBeTruthy();
 
 		const updateTool = registerTool.mock.calls.find(
 			(c: any[]) => c[0].name === "memory_update",
-		)[0];
+		)![0];
 		expect(updateTool.parameters).toBeTruthy();
 	});
 });
