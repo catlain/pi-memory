@@ -53,10 +53,10 @@ describe("rebuildIndex", () => {
 		rebuildIndex(TMP_DIR, INDEX_PATH, "L2");
 		const content = fs.readFileSync(INDEX_PATH, "utf-8");
 
-		expect(content).toContain("# Memory Index");
+		expect(content).toContain("# Project Memory Index (L2)");
 		expect(content).toContain("## 文件清单 (2)");
-		expect(content).toContain("| coding | git, lint |");
-		expect(content).toContain("| debug | uvicorn |");
+		expect(content).toContain("| coding--git,lint.md | git, lint |");
+		expect(content).toContain("| debug--uvicorn.md | uvicorn |");
 		// 链接列表与表格重复，已移除
 		expect(content).not.toContain("[coding](coding--git,lint.md)");
 		expect(content).not.toContain("- [");
@@ -70,11 +70,12 @@ describe("rebuildIndex", () => {
 			"utf-8",
 		);
 
-		rebuildIndex(TMP_DIR, INDEX_PATH, "L2");
+		rebuildIndex(TMP_DIR, INDEX_PATH, "L1");
 		const content = fs.readFileSync(INDEX_PATH, "utf-8");
 
+		expect(content).toContain("# Global Memory Index (L1)");
 		expect(content).toContain("## 文件清单 (1)");
-		expect(content).toContain("| real | data |");
+		expect(content).toContain("| real--data.md | data |");
 	});
 
 	it("自动创建父目录", () => {

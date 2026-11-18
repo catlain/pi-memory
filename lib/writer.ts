@@ -33,10 +33,11 @@ export function rebuildIndex(
 		return;
 	}
 
+	const scopeTitle = scope === "L1" ? "Global Memory Index (L1)" : "Project Memory Index (L2)";
 	const lines: string[] = [
-		"# Memory Index",
+		`# ${scopeTitle}`,
 		"",
-		"> 自动生成 — 列出所有记忆文件及其关键词摘要",
+		"> 自动生成 — 列出所有记忆文件及其关键词摘要；「文件」列为实际文件名（topic--kws.md），可直接 read",
 		"",
 		`## 文件清单 (${entries.length})`,
 		"",
@@ -47,7 +48,7 @@ export function rebuildIndex(
 	for (let i = 0; i < entries.length; i++) {
 		const e = entries[i];
 		const kws = e.keywords.join(", ") || "";
-		lines.push(`| ${i + 1} | ${e.topic} | ${kws} |`);
+		lines.push(`| ${i + 1} | ${e.file} | ${kws} |`);
 	}
 
 	lines.push(""); // trailing newline
