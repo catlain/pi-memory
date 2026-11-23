@@ -4,7 +4,7 @@
  */
 import { createHash } from "node:crypto";
 import { join } from "node:path";
-import { getEffectiveConfig } from "@pi-atelier/shared-utils";
+import { getEffectiveConfig, patchSettingsSection } from "@pi-atelier/shared-utils";
 import { createJudge } from "@pi-atelier/shared-utils/judge";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import {
@@ -38,6 +38,15 @@ export function loadConfig(cwd: string): RoutingConfig {
 		includeSpecs: config.includeSpecs !== false,
 		judgeModel: String(config.judgeModel ?? ""),
 	};
+}
+
+/** 持久化配置到 settings.json（全局层；读仍三层合并，与生态 /aging-config 同形态） */
+export function setRoutingConfig(patch: Partial<RoutingConfig>): RoutingConfig {
+	return patchSettingsSection<RoutingConfig>(
+		"memoryRouting",
+		patch,
+		{ enabled: true, batchSize: 5, includeSpecs: true, judgeModel: "" },
+	);
 }
 
 const SYSTEM_PROMPT =

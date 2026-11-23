@@ -4,11 +4,22 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const { judgeMock, sendMock, notifyMock } = vi.hoisted(() => ({
+const { judgeMock, sendMock, notifyMock, patchSectionMock } = vi.hoisted(() => ({
 	judgeMock: vi.fn(),
 	sendMock: vi.fn(),
 	notifyMock: vi.fn(),
+	patchSectionMock: vi.fn(),
 }));
+
+vi.mock("@pi-atelier/shared-utils", () => ({
+	getEffectiveConfig: () => ({ config: { enabled: true, batchSize: 5, includeSpecs: true, judgeModel: "" } }),
+	patchSettingsSection: patchSectionMock,
+}));
+patchSectionMock.mockImplementation(
+	(_section: string, patch: Record<string, unknown>) => ({
+		enabled: true, batchSize: 5, includeSpecs: true, judgeModel: "", ...patch,
+	}),
+);
 
 vi.mock("@pi-atelier/shared-utils/judge", () => ({
 	createJudge: () => ({ setContext: vi.fn(), judge: judgeMock }),
@@ -119,8 +130,10 @@ describe("registerRouting 事件接线与命令", () => {
 		const ctx = { ui: { notify: notifyMock } };
 		await handler("3", ctx);
 		expect(notifyMock.mock.calls.at(-1)?.[0]).toContain("batchSize = 3");
+		expect(patchSectionMock).toHaveBeenCalledWith("memoryRouting", { batchSize: 3 }, expect.anything());
 		await handler("off", ctx);
 		expect(notifyMock.mock.calls.at(-1)?.[0]).toContain("enabled = false");
+		expect(patchSectionMock).toHaveBeenCalledWith("memoryRouting", { enabled: false }, expect.anything());
 		await handler("on", ctx);
 		expect(notifyMock.mock.calls.at(-1)?.[0]).toContain("enabled = true");
 		await handler("", ctx);

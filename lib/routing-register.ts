@@ -5,7 +5,7 @@
 import { mkdirSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { MemoryRouter, routingJudge, loadConfig } from "./routing";
+import { MemoryRouter, routingJudge, loadConfig, setRoutingConfig } from "./routing";
 
 const AGENT_DIR = process.env.PI_AGENT_DIR ?? join(process.env.HOME ?? "", ".pi", "agent");
 
@@ -49,11 +49,14 @@ export function registerRouting(pi: ExtensionAPI): void {
 			if (!notify) return;
 			const cfg = loadConfig(process.cwd());
 			if (/^\d+$/.test(sub)) {
-				router.setConfig({ batchSize: Number(sub) });
-				notify(`memoryRouting.batchSize = ${sub}`);
+				const n = Math.max(1, Math.min(20, Number(sub)));
+				const updated = setRoutingConfig({ batchSize: n });
+				router.setConfig({ batchSize: updated.batchSize });
+				notify(`✅ memoryRouting.batchSize = ${updated.batchSize}（已持久化 settings.json，重启后保留）`);
 			} else if (sub === "off" || sub === "on") {
-				router.setConfig({ enabled: sub === "on" });
-				notify(`memoryRouting.enabled = ${sub === "on"}`);
+				const updated = setRoutingConfig({ enabled: sub === "on" });
+				router.setConfig({ enabled: updated.enabled });
+				notify(`✅ memoryRouting.enabled = ${updated.enabled}（已持久化 settings.json，重启后保留）`);
 			} else {
 				notify(
 					`memory-routing: enabled=${cfg.enabled} batchSize=${cfg.batchSize} ` +
