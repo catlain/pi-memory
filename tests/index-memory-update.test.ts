@@ -28,7 +28,7 @@ async function getMemoryUpdate(): Promise<Function> {
 	const registerTool = vi.fn();
 	const on = vi.fn();
 	const mod = await import("../index");
-	mod.default({ registerTool, on } as any);
+	mod.default({ registerTool, on, registerCommand: vi.fn() } as any);
 	memoryUpdateExecute = registerTool.mock.calls.find(
 		(c: any[]) => c[0].name === "memory_update",
 	)![0].execute;

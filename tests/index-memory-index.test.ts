@@ -24,7 +24,7 @@ async function getMemoryIndex(): Promise<Function> {
 	const registerTool = vi.fn();
 	const on = vi.fn();
 	const mod = await import("../index");
-	mod.default({ registerTool, on } as any);
+	mod.default({ registerTool, on, registerCommand: vi.fn() } as any);
 	memoryIndexExecute = registerTool.mock.calls.find(
 		(c: any[]) => c[0].name === "memory_index",
 	)![0].execute;

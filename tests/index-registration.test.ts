@@ -10,7 +10,7 @@ describe("工具注册", () => {
 	it("注册 memory_index 和 memory_update 两个工具", async () => {
 		const registerTool = vi.fn();
 		const on = vi.fn();
-		const mockPi = { registerTool, on };
+		const mockPi = { registerTool, on, registerCommand: vi.fn() };
 
 		const mod = await import("../index");
 		mod.default(mockPi as any);
@@ -24,7 +24,7 @@ describe("工具注册", () => {
 	it("工具 description 为字符串", async () => {
 		const registerTool = vi.fn();
 		const on = vi.fn();
-		const mockPi = { registerTool, on };
+		const mockPi = { registerTool, on, registerCommand: vi.fn() };
 
 		const mod = await import("../index");
 		mod.default(mockPi as any);
@@ -40,7 +40,7 @@ describe("工具注册", () => {
 	it("工具参数 schema 正确", async () => {
 		const registerTool = vi.fn();
 		const on = vi.fn();
-		const mockPi = { registerTool, on };
+		const mockPi = { registerTool, on, registerCommand: vi.fn() };
 
 		const mod = await import("../index");
 		mod.default(mockPi as any);

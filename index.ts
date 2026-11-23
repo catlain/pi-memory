@@ -31,10 +31,14 @@ import {
 	SOFT_FILE_LIMIT,
 } from "./lib/types";
 import { rebuildIndex } from "./lib/writer";
+import { registerRouting } from "./lib/routing-register";
 
 export default function memoryToolsExtension(pi: ExtensionAPI) {
 	// ── before_agent_start: 注入记忆说明 + 索引到 systemPrompt ──
 	registerMemoryHook(pi);
+
+	// ── memory routing: 批量判定式记忆路由（拉模式，change memory-routing）──
+	registerRouting(pi);
 
 	// ── memory_index: 查询记忆清单 ──────────────────────
 	pi.registerTool({
