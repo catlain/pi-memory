@@ -40,8 +40,7 @@ export function registerRouting(pi: ExtensionAPI): void {
 			if (sub === "on" || sub === "off") {
 				const enabled = sub === "on";
 				const updated = setRoutingConfig({ enabled });
-				router.config = updated;
-				router.setEnabled(enabled);
+				router.setConfig(updated);
 				notify(`✅ memoryRouting.enabled = ${updated.enabled}（已持久化 settings.json）`);
 				return;
 			}

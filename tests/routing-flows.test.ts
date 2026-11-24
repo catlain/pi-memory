@@ -85,7 +85,7 @@ describe("字符池触发（三信号源）", () => {
 		await router.maybeTrigger(piStub());
 		expect(judgeMock).toHaveBeenCalledTimes(1);
 		const text = String(judgeMock.mock.calls[0][0].text);
-		expect(text).toContain("[tool✗] ETARGET");
+		expect(text).toContain("[tool✗] bash → ETARGET");
 		expect(text).not.toContain("content...");
 	});
 
@@ -101,7 +101,7 @@ describe("字符池触发（三信号源）", () => {
 
 describe("关键词匹配与 ephemeral 注入", () => {
 	it("关键词命中 → 未读资产 → ephemeral:hint 发出", async () => {
-		judgeMock.mockResolvedValue(["git 陷阱"]);
+		judgeMock.mockResolvedValue(["git"]);
 		router.accumulate(assistantMsg(longText));
 		await router.maybeTrigger(piStub());
 		expect(emitMock).toHaveBeenCalledTimes(1);
