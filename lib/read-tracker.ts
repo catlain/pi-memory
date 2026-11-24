@@ -75,3 +75,8 @@ export function filterVerdictPaths(
 	}
 	return out;
 }
+
+/** 工厂（v3 routing 接口形态）：等价 new ReadTracker() */
+export function createReadTracker(): ReadTracker {
+	return new ReadTracker();
+}

@@ -1,70 +1,59 @@
 /**
- * memory-routing 事件接线与命令注册。
- * 核心路由器见 routing.ts。
+ * routing 扩展接线：事件钩子（message_end/tool_execution_start/tool_result）+ 命令注册
  */
-import { mkdirSync, appendFileSync } from "node:fs";
-import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { MemoryRouter, routingJudge, loadConfig, setRoutingConfig } from "./routing";
-
-const AGENT_DIR = process.env.PI_AGENT_DIR ?? join(process.env.HOME ?? "", ".pi", "agent");
-
-function appendRunLog(line: string): void {
-	try {
-		mkdirSync(join(AGENT_DIR, "logs"), { recursive: true });
-		appendFileSync(
-			join(AGENT_DIR, "logs", "memory-routing.log"),
-			`${new Date().toISOString()} ${line}\n`,
-		);
-	} catch {
-		// 日志失败不影响主流程
-	}
-}
+import { MemoryRouter, loadConfig, setRoutingConfig } from "./routing";
 
 export function registerRouting(pi: ExtensionAPI): void {
-	const router = new MemoryRouter(process.cwd());
-	const pendingTools = new Map<string, unknown>();
+	const cfg = loadConfig(process.cwd());
+	const router = new MemoryRouter(process.cwd(), cfg);
+	const pendingTools = new Map<string, { toolName: string; args: unknown }>();
+
 	pi.on("message_end", async (event: unknown, ctx: unknown) => {
-		if (ctx) routingJudge.setContext(ctx as never); // 事件回调是 ctx 权威来源（shepherd 模式）
-		router.accumulate(event);
-		await router.maybeTrigger(pi);
+		router.accumulate(event as { message?: { content?: unknown } });
+		void router.maybeTrigger(pi);
 	});
+
 	pi.on("tool_execution_start", (event: unknown) => {
-		const { toolName, args, toolCallId } = event as {
-			toolName?: string; args?: unknown; toolCallId?: string;
-		};
-		if (toolName === "read" && toolCallId) pendingTools.set(toolCallId, args);
+		const { toolName, args, toolCallId } = event as { toolName?: string; args?: unknown; toolCallId?: string };
+		if (toolName && toolCallId) pendingTools.set(toolCallId, { toolName, args });
 	});
+
 	pi.on("tool_result", (event: unknown) => {
-		const { toolCallId, isError } = event as { toolCallId?: string; isError?: boolean };
-		if (!toolCallId || !pendingTools.has(toolCallId)) return;
-		const args = pendingTools.get(toolCallId);
-		pendingTools.delete(toolCallId);
-		if (!isError) router.recordRead("read", args, false);
+		const { toolCallId, isError, result } = event as { toolCallId?: string; isError?: boolean; result?: unknown };
+		const rec = toolCallId ? pendingTools.get(toolCallId) : undefined;
+		if (!rec) return;
+		pendingTools.delete(toolCallId!);
+		router.observeToolResult(rec.toolName, rec.args, isError === true, result);
+		router.readTracker.recordRead(rec.toolName ?? "", rec.args, isError === true);
 	});
+
 	pi.registerCommand("memory-routing", {
-		handler: async (rawArgs: string, ctx) => {
+		handler: async (rawArgs: string, ctx: unknown) => {
+			const notify = (text: string) => (ctx as { ui?: { notify?: (t: string, l?: string) => void } }).ui?.notify?.(text, "info");
 			const sub = rawArgs.trim();
-			const notify = (ctx as { ui?: { notify?: (t: string) => void } })?.ui?.notify;
-			if (!notify) return;
-			const cfg = loadConfig(process.cwd());
-			if (/^\d+$/.test(sub)) {
-				const n = Math.max(1, Math.min(20, Number(sub)));
-				const updated = setRoutingConfig({ batchSize: n });
-				router.setConfig({ batchSize: updated.batchSize });
-				notify(`✅ memoryRouting.batchSize = ${updated.batchSize}（已持久化 settings.json，重启后保留）`);
-			} else if (sub === "off" || sub === "on") {
-				const updated = setRoutingConfig({ enabled: sub === "on" });
-				router.setConfig({ enabled: updated.enabled });
-				notify(`✅ memoryRouting.enabled = ${updated.enabled}（已持久化 settings.json，重启后保留）`);
-			} else {
-				notify(
-					`memory-routing: enabled=${cfg.enabled} batchSize=${cfg.batchSize} ` +
-						`includeSpecs=${cfg.includeSpecs}\n用法: /memory-routing [N|on|off]`,
-				);
+			if (sub === "" || sub === "status") {
+				const c = router.config;
+				notify(`memoryRouting: enabled=${c.enabled} batchChars=${c.batchChars} includeSpecs=${c.includeSpecs}\n用法: /memory-routing [N|on|off]（N=字符阈值）`);
+				return;
 			}
+			if (sub === "on" || sub === "off") {
+				const enabled = sub === "on";
+				const updated = setRoutingConfig({ enabled });
+				router.config = updated;
+				router.setEnabled(enabled);
+				notify(`✅ memoryRouting.enabled = ${updated.enabled}（已持久化 settings.json）`);
+				return;
+			}
+			const n = Number.parseInt(sub, 10);
+			if (Number.isFinite(n) && n >= 200 && n <= 20000) {
+				const updated = setRoutingConfig({ batchChars: n });
+				router.config = updated;
+				notify(`✅ memoryRouting.batchChars = ${updated.batchChars}（已持久化 settings.json）`);
+				return;
+			}
+			notify(`无效参数「${sub}」：N（200-20000 字符阈值）| on | off | status`);
 		},
-		description: "记忆按需路由配置. 用法: /memory-routing | /memory-routing <N|on|off>",
+		description: "记忆路由：查看/设置字符阈值与开关",
 	});
-	appendRunLog("routing registered");
 }

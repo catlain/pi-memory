@@ -242,11 +242,11 @@ extensions/memory/
 批量判定路由器：AI 叙述（text 块）计满 N 条 → LLM 判定与哪些**未读**记忆/spec 强相关 → steer 注入指路。
 
 ```jsonc
-// settings.json（可选；缺省 enabled=true/batchSize=5/includeSpecs=true）
-"memoryRouting": { "enabled": true, "batchSize": 5, "includeSpecs": true, "judgeModel": "" }
+// settings.json（可选；缺省 enabled=true/batchChars=1200/includeSpecs=true）
+"memoryRouting": { "enabled": true, "batchChars": 1200, "includeSpecs": true, "judgeModel": "" }
 ```
 
-- `/memory-routing` — 查看当前配置；`/memory-routing 8` 改批量；`on/off` 开关（1.2.1 起 N/on/off 持久化 settings.json，与生态 /aging-config 同形态；读仍三层合并支持项目级覆盖）
+- `/memory-routing` — 查看当前配置；`/memory-routing 1500` 改字符阈值（200–20000）；`on/off` 开关（N/on/off 持久化 settings.json，与生态 /aging-config 同形态；读仍三层合并支持项目级覆盖）
 - 防护：白名单容错匹配（幻觉路径丢弃，max 3）、sha1 幂等、fail-open、已读剔除、已提醒未读标注自降权
 - 判定日志：`~/.pi/agent/logs/memory-routing-llmjudge.log`
 
