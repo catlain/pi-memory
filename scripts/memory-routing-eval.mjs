@@ -19,35 +19,45 @@ const SYSTEM_PROMPT =
 /** 词库构建（复刻 asset-catalog + kwOf：记忆文件名 kw 段 ∪ spec capability 名） */
 function buildVocab(cwd) {
 	const s = new Set();
-	const addKw = (stem) => {
-		const kw = stem.replace(/\.md$/, "").split("--")[1] ?? "";
-		for (const k of kw.split(",")) { const t = k.trim().toLowerCase(); if (t.length >= 2) s.add(t); }
+	const wordAssets = new Map(); // 词→资产集合（对齐线上 matchAssets 倒排语义）
+	const reg = (word, asset) => {
+		const w = word.trim().toLowerCase();
+		if (w.length < 2) return;
+		s.add(w);
+		if (!wordAssets.has(w)) wordAssets.set(w, new Set());
+		wordAssets.get(w).add(asset);
 	};
 	for (const dir of [`${AGENT}/memory`, `${cwd}/.pi/memory`]) {
-		if (existsSync(dir)) for (const f of readdirSync(dir)) if (f.endsWith(".md")) addKw(f);
+		if (existsSync(dir)) for (const f of readdirSync(dir)) if (f.endsWith(".md")) {
+			const stem = f.replace(/\.md$/, "");
+			const kw = stem.split("--")[1] ?? "";
+			for (const k of kw.split(",")) reg(k, stem);
+		}
 	}
 	const specs = `${cwd}/openspec/specs`;
 	if (existsSync(specs))
 		for (const cap of readdirSync(specs)) {
-			if (cap.length >= 2) s.add(cap.toLowerCase());
-			// spec frontmatter keywords（与线上 parseSpecKeywords 同语义：inline/block 两式，小写化）
-			const p = `${specs}/${cap}/spec.md`;
-			if (!existsSync(p)) continue;
-			const fm = readFileSync(p, "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/);
+			const asset = `openspec/specs/${cap}/spec.md`;
+			reg(cap, asset);
+			const p2 = `${specs}/${cap}/spec.md`;
+			if (!existsSync(p2)) continue;
+			const fm = readFileSync(p2, "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/);
 			if (!fm) continue;
 			const inline = fm[1].match(/^keywords:\s*\[(.*)\]\s*$/m);
-			if (inline) {
-				for (const k of inline[1].split(",")) { const t = k.trim().toLowerCase(); if (t.length >= 2) s.add(t); }
-				continue;
-			}
+			if (inline) { for (const k of inline[1].split(",")) reg(k, asset); continue; }
 			const block = fm[1].match(/^keywords:\s*\n((?:\s+-\s+.+\n?)+)/m);
-			if (block)
-				for (const line of block[1].split("\n")) {
-					const t = line.replace(/^\s*-\s*/, "").trim().toLowerCase();
-				if (t.length >= 2) s.add(t);
-			}
+			if (block) for (const line of block[1].split("\n")) reg(line.replace(/^\s*-\s*/, ""), asset);
 		}
-	return [...s].sort((x, y) => y.length - x.length);
+	return { words: [...s].sort((x, y) => y.length - x.length), wordAssets };
+}
+// 词→资产解析（精确→模糊子串互含；词库外词无资产=线上无效果）
+function assetsOf(word, words, wordAssets) {
+	const w = word.toLowerCase();
+	const out = new Set(wordAssets.get(w) ?? []);
+	for (const [v, as] of wordAssets) {
+		if (v.includes(w) || w.includes(v)) for (const a of as) out.add(a);
+	}
+	return out;
 }
 
 /** parseKeywords 复刻（keyword-routing.ts） */
@@ -90,7 +100,7 @@ async function score(promptOverride, modelArg) {
 	const [mp, mi] = (modelArg ?? "zai-coding-cn/glm-5.3").split("/");
 	const { model, apiKey } = await getModel(mp, mi);
 	const cwd = "C:/Users/Administrator/.pi/agent/git/github.com/catlain";
-	const vocab = buildVocab(cwd);
+	const { words: vocab, wordAssets } = buildVocab(cwd);
 	const spec = JSON.parse(readFileSync(new URL("./memory-routing-eval-cases.json", import.meta.url), "utf8"));
 	const prompt = promptOverride || SYSTEM_PROMPT;
 	const pf = promptOverride?.startsWith("@") ? readFileSync(promptOverride.slice(1), "utf8") : null;
@@ -104,16 +114,19 @@ async function score(promptOverride, modelArg) {
 		let verdict, raw = "";
 		try { raw = await callLLM({ model, apiKey }, usePrompt, user); } catch (e) { verdict = "ERR"; }
 		const answer = verdict === "ERR" ? null : parseKeywords(raw ?? "");
-		const ans = (answer ?? []).filter((a) => vocab.some((v) => v === a.toLowerCase() || v.includes(a.toLowerCase()) || a.toLowerCase().includes(v))); // 对齐线上倒排：词库外词无效果
+		// 资产级评分（对齐线上 matchAssets 倒排语义）：选对资产即可，同资产异词形不算错
 		const expected = c.expected ?? [];
-		const norm = (w) => w.toLowerCase().replace(/[_\-\s]+/g, ""); // 词形规范化（下划线/连字符/空格统一）
-		const hit = expected.filter((e) => ans.some((a) => norm(a) === norm(e) || norm(a).includes(norm(e)) || norm(e).includes(norm(a))));
-		const fp = expected.length === 0 && ans.length > 0;
-		const ok = expected.length === 0 ? ans.length === 0 : hit.length > 0;
+		const answerAssets = new Set();
+		for (const a of answer ?? []) for (const as of assetsOf(a, vocab, wordAssets)) answerAssets.add(as);
+		const expectedAssets = new Set();
+		for (const e of expected) for (const as of assetsOf(e, vocab, wordAssets)) expectedAssets.add(as);
+		const hit = [...expectedAssets].filter((a) => answerAssets.has(a));
+		const fp = expected.length === 0 && answerAssets.size > 0;
+		const ok = expected.length === 0 ? answerAssets.size === 0 : hit.length > 0;
 		if (ok) pass++;
-		if (process.env.DBG_ONLY) console.error("DBG:", JSON.stringify({ rawHead: (raw ?? "").slice(0, 60), parsed: answer, ansAfterFilter: ans, expected, hit }, null, 1));
-		details.push({ id: c.id, verdict: c.verdict, expected, answer: ans, raw: (raw ?? "").slice(0, 120), ok, note: c.note });
-		console.log(`${ok ? "✓" : "✗"} [${c.id}] 期望=${JSON.stringify(expected)} 判定=${JSON.stringify(ans)}${fp ? " ←FP" : ""}`);
+		if (process.env.DBG_ONLY) console.error("DBG:", JSON.stringify({ rawHead: (raw ?? "").slice(0, 60), parsed: answer, answerAssets: [...answerAssets], expected, hit }, null, 1));
+		details.push({ id: c.id, verdict: c.verdict, expected, answer: answer ?? [], hitAssets: hit, raw: (raw ?? "").slice(0, 120), ok, note: c.note });
+		console.log(`${ok ? "✓" : "✗"} [${c.id}] 期望=${JSON.stringify(expected)} 判定=${JSON.stringify(answer ?? [])}${fp ? " ←FP" : ""}`);
 	}
 	console.log(`\n结果: ${pass}/${cases.length} 通过`);
 	const out = { pass, total: cases.length, promptUsed: usePrompt.slice(0, 100), promptFull: usePrompt, details };
