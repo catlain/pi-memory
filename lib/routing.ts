@@ -1,58 +1,44 @@
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+/**
+ * 记忆路由核心（判定编排层）：信号池取批 → 两段判定（S1 领域名提取 → S2 词表映射）→ 倒排匹配 → 未读/未提示过滤 → ephemeral:hint + settle-continue。
+ * 信号采集见 signal-pool.ts；判定器配置见 keyword-routing.ts。
+ */
 import { createJudge, type JudgeInstance } from "@pi-atelier/shared-utils/judge";
-import { collectMemoryAssets, collectSpecAssets, type KnowledgeAsset } from "./asset-catalog";
-import { buildHintText, buildVocabulary, matchAssets, parseKeywords } from "./keyword-routing";
-import { contentBlocksOf, roleOf } from "./msg-shapes";
-import { PromptedSet } from "./prompted-set";
-import { loadConfig, type RoutingConfig } from "./routing-config";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { collectMemoryAssets, collectSpecAssets } from "./asset-catalog";
+import { buildVocabulary, matchAssets, buildHintText, parseKeywords, parseTopics, MAP_SYSTEM_PROMPT, TOPIC_SYSTEM_PROMPT } from "./keyword-routing";
+import type { KnowledgeAsset } from "./asset-catalog";
 import { createReadTracker } from "./read-tracker";
+import { loadConfig, setRoutingConfig, type RoutingConfig } from "./routing-config";
+import { SignalPool } from "./signal-pool";
+import { PromptedSet } from "./prompted-set";
 
-export { loadConfig, setRoutingConfig, DEFAULTS } from "./routing-config";
+export { loadConfig, setRoutingConfig };
 
-/** 单信号行截断 */
-const LINE_CAP = 2000;
+/** S2 词库匹配解析：parseKeywords 词库过滤后可能为 null（全部词表外），归一为空数组 */
+const parseMap: (raw: string) => string[] = (raw) => parseKeywords(raw) ?? [];
 
-const SYSTEM_PROMPT =
-	"你是主题路由标注器。你会收到一个主题词库和一段 AI 工作记录（含 [叙述]/[tool]/[tool✗] 三类标签行，报错信号已在行内）。" +
-	"你的任务：【只能从词库中选出】与工作记录最相关的主题关键词，每行一个，最多 5 个。" +
-	"禁止自创词库外的词；词库内确实无合适项时只输出：无。" +
-	"只输出词本身，不要解释、不要编号、不要标点符号前后缀。";
+/** S1 领域名提取解析：无可命名领域 → 空集（S2 不调用） */
+const parseTopicList: (raw: string) => string[] = (raw) => parseTopics(raw) ?? [];
 
-/** 工具调用参数摘要：bash 取 command，read/edit 取 path，其余 JSON 截断 */
-function summarizeToolCall(toolName: string, args: unknown): string {
-	const a = (args ?? {}) as Record<string, unknown>;
-	if (typeof a.command === "string") return `${toolName}: ${a.command.slice(0, LINE_CAP)}`;
-	if (typeof a.path === "string") return `${toolName}: ${a.path}`;
-	try {
-		return `${toolName}: ${JSON.stringify(a).slice(0, 150)}`;
-	} catch {
-		return toolName;
-	}
-}
+/** 幂等去重上限：超过则整表清空（防长会话无界增长） */
+const JUDGED_CAP = 50;
 
-/** 报错摘要：截 200 字头部（特征码区） */
-function summarizeError(result: unknown): string {
-	const s = typeof result === "string" ? result : JSON.stringify(result);
-	return String(s).slice(0, 200);
-}
-
-/** 记忆路由核心：字符池（三信号源）→ 计满同步判定（词表路由）→ 倒排匹配 → 未读过滤 → ephemeral:hint + settle-continue */
 export class MemoryRouter {
 	config: RoutingConfig;
-	private buffer: string[] = [];
-	private charCount = 0;
+	private pool = new SignalPool();
+
+	/** 只读可观测点：池内累计字符数（测试/诊断用，不外露池本身） */
+	get poolChars(): number {
+		return this.pool.chars;
+	}
 	private judgedBatches = new Set<string>();
 	private judgeInstance: JudgeInstance<string[]> | null = null;
+	private topicJudge: JudgeInstance<string[]> | null = null;
 	private pendingCtx: unknown = null;
 	private prompted = new PromptedSet();
 	/** 待注入计数：agent_before_settle 读到即消费（单次 continue），驱动下一 provider request */
 	private pendingHintCount = 0;
 
-	/** message_end 事件的 ExtensionContext —— judge 调 LLM 的必要通道，首个事件到达时注入 */
-	setJudgeContext(ctx: unknown): void {
-		this.pendingCtx = ctx;
-		if (this.judgeInstance) (this.judgeInstance as unknown as { setContext(c: unknown): void }).setContext(ctx);
-	}
 	readonly readTracker = createReadTracker();
 
 	constructor(private cwd: string, config: RoutingConfig) {
@@ -63,64 +49,25 @@ export class MemoryRouter {
 		this.config = { ...cfg };
 	}
 
-	/** message_end：叙述（text 块）+ 工具摘要（toolCall 块）入池 */
+	/** message_end 事件的 ExtensionContext —— judge 调 LLM 的必要通道，首个事件到达时注入 */
+	setJudgeContext(ctx: unknown): void {
+		this.pendingCtx = ctx;
+		if (this.judgeInstance) (this.judgeInstance as unknown as { setContext(c: unknown): void }).setContext(ctx);
+		if (this.topicJudge) (this.topicJudge as unknown as { setContext(c: unknown): void }).setContext(ctx);
+	}
+
+	/** message_end：叙述 + 工具摘要入池 */
 	accumulate(event: unknown): void {
 		if (!this.config.enabled) return; // 快照级；跨会话 off 感知靠 maybeTrigger 热读
-		try {
-			// 只判 assistant：toolResult 的 text 块是工具结果正文，入池即秒满门槛（D3：成功结果不入池）
-			if (roleOf(event) !== "assistant") return;
-			const blocks = contentBlocksOf(event) as Array<Record<string, unknown>>;
-			const lines: string[] = [];
-			for (const b of blocks) {
-				if (b.type === "text" && typeof b.text === "string" && b.text.trim()) {
-					lines.push(`[叙述] ${b.text.slice(0, LINE_CAP)}`);
-				} else if (b.type === "toolCall" && typeof b.name === "string") {
-					lines.push(`[tool] ${summarizeToolCall(b.name, b.arguments).slice(0, LINE_CAP)}`);
-				}
-			}
-			this.push(lines);
-		} catch {
-			/* 信号提取失败静默 */
-		}
+		this.pool.accumulate(event);
 	}
 
-	/** tool_result：报错（isError）入池（成功结果体积大信号弱不入） */
+	/** tool_result：报错入池 */
 	observeToolResult(toolName: string, args: unknown, isError: boolean, result: unknown): void {
-		if (!isError) return;
-		this.push([`[tool✗] ${toolName} → ${summarizeError(result)}`]);
+		this.pool.observeToolResult(toolName, args, isError, result);
 	}
 
-	private push(lines: string[]): void {
-		for (const l of lines) {
-			this.buffer.push(l);
-			this.charCount += l.length;
-		}
-		if (this.charCount > 6000) this.buffer = this.buffer.slice(-10);
-	}
-
-	private takeBatch(): { lines: string[]; chars: number } | null {
-		if (this.charCount < this.config.batchChars) return null;
-		const lines = this.buffer.splice(0);
-		const chars = this.charCount;
-		this.charCount = 0;
-		return { lines, chars };
-	}
-
-	private ensureJudge() {
-		if (!this.judgeInstance) {
-			this.judgeInstance = createJudge<string[]>({
-				label: "memory-routing",
-				systemPrompt: SYSTEM_PROMPT,
-				parse: parseKeywords,
-				judgeLogPath: `${process.env.USERPROFILE ?? process.env.HOME ?? ""}/.pi/agent/logs/memory-routing-llmjudge.log`,
-				legacySectionKeys: ["memoryRouting", "shepherd"],
-			});
-			if (this.pendingCtx != null) (this.judgeInstance as unknown as { setContext(c: unknown): void }).setContext(this.pendingCtx);
-		}
-		return this.judgeInstance;
-	}
-
-	/** agent_before_settle：消费待注入提醒——补发空消息保队列有货，continue 才合法（防 "requested continuation without runnable model context"） */
+	/** agent_before_settle：消费待注入提醒——补发空消息保队列有货，continue 才合法 */
 	consumePendingHint(pi: ExtensionAPI): boolean {
 		if (this.pendingHintCount <= 0) return false;
 		this.pendingHintCount = 0;
@@ -141,50 +88,75 @@ export class MemoryRouter {
 		// 配置热读：跨会话立即感知 off/N 变更（写入层为全局 settings）
 		this.config = loadConfig(this.cwd);
 		if (!this.config.enabled) {
-			this.buffer = [];
-			this.charCount = 0;
+			this.pool.clear();
 			return;
 		}
-		const batch = this.takeBatch();
+		const batch = this.pool.takeBatch(this.config.batchChars);
 		if (!batch) return;
 		const narrative = batch.lines.join("\n");
 		const hash = sha1Lite(narrative);
 		if (this.judgedBatches.has(hash)) return;
 		this.judgedBatches.add(hash);
-		if (this.judgedBatches.size > 50) this.judgedBatches.clear();
+		if (this.judgedBatches.size > JUDGED_CAP) this.judgedBatches.clear();
 		try {
-			const assets: KnowledgeAsset[] = collectMemoryAssets(this.cwd);
-			if (this.config.includeSpecs) assets.push(...collectSpecAssets(this.cwd));
-			if (assets.length === 0) return;
-			const vocab = buildVocabulary(assets);
-			if (vocab.length === 0) return;
-
-			const keywords = await this.ensureJudge().judge({
-				question:
-					"从下方词库中【只能选不能创造】与本批工作记录最相关的主题关键词（每行一个，≤5 个，无合适输出“无”）。\n词库：" +
-					vocab.join("、"),
-				text: narrative,
-				contextLabel: `batch-${hash}(${batch.chars}字)`,
-				model: this.config.judgeModel || undefined,
-			});
+			const keywords = await this.judgeBatch(narrative, `batch-${hash}(${batch.chars}字)`);
 			if (!keywords || keywords.length === 0) return;
 
-			const hits = matchAssets(keywords, assets);
-			const candidates = hits
+			const assets: KnowledgeAsset[] = collectMemoryAssets(this.cwd);
+			if (this.config.includeSpecs) assets.push(...collectSpecAssets(this.cwd));
+			const candidates = matchAssets(keywords, assets)
 				.filter((a) => !this.readTracker.hasRead(a.entry) && !this.prompted.has(a.entry))
 				.slice(0, 3);
 			if (candidates.length === 0) return;
 			if (!this.config.enabled) return; // emit 前飞行拦截（off 后判定返回时拦截）
 
 			for (const a of candidates) this.prompted.add(a.entry);
-
-			// 工具信号计入叙述通道，批量判定后清理当前池
 			pi.events.emit("ephemeral:hint", buildHintText(candidates, keywords, this.cwd));
-			// 回合末才 settle-continue；工具循环中间的注入由下一循环请求自然 drain；settle 消费时补发队列燃料，防中途 flush 后非法 continue
+			// 回合末才 settle-continue；工具循环中间的注入由下一循环请求自然 drain
 			if (opts?.endOfTurn !== false) this.pendingHintCount = 1;
 		} catch {
 			/* fail-open */
 		}
+	}
+
+	/** 两段判定：S1 提取领域名（无词表、不判断新不新）→ S2 领域名→词表原样词（纯映射，不给批） */
+	private async judgeBatch(narrative: string, contextLabel: string): Promise<string[]> {
+		const assets: KnowledgeAsset[] = collectMemoryAssets(this.cwd);
+		if (this.config.includeSpecs) assets.push(...collectSpecAssets(this.cwd));
+		const vocab = buildVocabulary(assets);
+		if (vocab.length === 0) return [];
+		const { topic, map } = this.ensureJudges();
+		const judgeOpts = { contextLabel, model: this.config.judgeModel || undefined };
+		const topics = await topic.judge({
+			question: "列出这段工作记录正在处理的知识领域名称（每行一个，最多 5 个，无可命名领域输出“无”）。",
+			text: narrative,
+			...judgeOpts,
+		});
+		if (!topics || topics.length === 0) return [];
+		const mapped = await map.judge({
+			question: "为下列领域名称在词库中找出最相关的词（只输出词库原样词，每行一个，最多 5 个，均不相关输出“无”）。\n词库：" + vocab.join("、"),
+			text: topics.join("\n"),
+			...judgeOpts,
+		});
+		return mapped ?? [];
+	}
+
+	private ensureJudges() {
+		const logDir = `${process.env.USERPROFILE ?? process.env.HOME ?? ""}/.pi/agent/logs/`;
+		const mk = (label: string, systemPrompt: string, parse: (raw: string) => string[]): JudgeInstance<string[]> => {
+			const inst = createJudge<string[]>({
+				label,
+				systemPrompt,
+				parse,
+				judgeLogPath: `${logDir}memory-routing-llmjudge.log`,
+				legacySectionKeys: ["memoryRouting", "shepherd"],
+			});
+			if (this.pendingCtx != null) (inst as unknown as { setContext(c: unknown): void }).setContext(this.pendingCtx);
+			return inst;
+		};
+		this.topicJudge ??= mk("memory-routing-topics", TOPIC_SYSTEM_PROMPT, parseTopicList);
+		this.judgeInstance ??= mk("memory-routing-map", MAP_SYSTEM_PROMPT, parseMap);
+		return { topic: this.topicJudge, map: this.judgeInstance };
 	}
 }
 

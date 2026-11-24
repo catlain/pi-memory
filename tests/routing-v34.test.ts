@@ -64,7 +64,7 @@ describe("v3.4：enabled 三处检查 + 已提示集合 + settle-continue", () =
 	it("off 后 accumulate 不入池（快照级拦截）", async () => {
 		router.setConfig({ ...router.config, enabled: false });
 		router.accumulate(assistantMsg(longText));
-		expect((router as any).charCount).toBe(0);
+		expect(router.poolChars).toBe(0);
 	});
 
 	it("已提示集合：同资产二次命中不重弹", async () => {
@@ -113,8 +113,8 @@ describe("v3.4：enabled 三处检查 + 已提示集合 + settle-continue", () =
 		const r = new MemoryRouter("/w", { enabled: true, batchChars: 100, includeSpecs: true, judgeModel: "" });
 		const toolResultMsg = { message: { role: "toolResult", content: [{ type: "text", text: "# 某记忆文件全文".repeat(30) }] } };
 		r.accumulate(toolResultMsg);
-		expect((r as unknown as { charCount: number }).charCount).toBe(0);
+		expect(r.poolChars).toBe(0);
 		r.accumulate({ message: { role: "assistant", content: [{ type: "text", text: "正常叙述" }] } });
-		expect((r as unknown as { charCount: number }).charCount).toBeGreaterThan(0);
+		expect(r.poolChars).toBeGreaterThan(0);
 	});
 });
