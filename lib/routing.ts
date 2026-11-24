@@ -66,7 +66,9 @@ export class MemoryRouter {
 	accumulate(event: unknown): void {
 		if (!this.config.enabled) return; // 快照级；跨会话 off 感知靠 maybeTrigger 热读
 		try {
-			const msg = (event as { message?: { content?: unknown } }).message;
+			const msg = (event as { message?: { role?: string; content?: unknown } }).message;
+			// 只判 assistant：toolResult 的 text 块是工具结果正文，入池即秒满门槛（D3：成功结果不入池）
+			if (msg?.role !== "assistant") return;
 			const blocks = Array.isArray(msg?.content) ? (msg.content as Array<Record<string, unknown>>) : [];
 			const lines: string[] = [];
 			for (const b of blocks) {

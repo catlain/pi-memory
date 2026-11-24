@@ -87,4 +87,13 @@ describe("v3.4：enabled 三处检查 + 已提示集合 + settle-continue", () =
 		expect(router.consumePendingHint()).toBe(true); // settle 读到 → continue
 		expect(router.consumePendingHint()).toBe(false); // 单次消费 → 收敛
 	});
+
+	it("toolResult 消息的 text 块不入池（read 全文污染源修复）", () => {
+		const r = new MemoryRouter("/w", { enabled: true, batchChars: 100, includeSpecs: true, judgeModel: "" });
+		const toolResultMsg = { message: { role: "toolResult", content: [{ type: "text", text: "# 某记忆文件全文".repeat(30) }] } };
+		r.accumulate(toolResultMsg);
+		expect((r as unknown as { charCount: number }).charCount).toBe(0);
+		r.accumulate({ message: { role: "assistant", content: [{ type: "text", text: "正常叙述" }] } });
+		expect((r as unknown as { charCount: number }).charCount).toBeGreaterThan(0);
+	});
 });

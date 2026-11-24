@@ -77,7 +77,7 @@ describe("字符池触发（三信号源）", () => {
 
 	it("纯 toolCall 消息（无叙述）也入池（工具摘要计字符）", async () => {
 		judgeMock.mockResolvedValue([]);
-		router.accumulate({ message: { content: [{ type: "toolCall", name: "bash", arguments: { command: longText } }] } });
+		router.accumulate({ message: { role: "assistant", content: [{ type: "toolCall", name: "bash", arguments: { command: longText } }] } });
 		await router.maybeTrigger(piStub());
 		expect(judgeMock).toHaveBeenCalledTimes(1);
 		expect(String(judgeMock.mock.calls[0][0].text)).toContain("[tool] bash:");
