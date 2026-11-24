@@ -1,0 +1,346 @@
+{
+ "pass": 19,
+ "total": 30,
+ "promptUsed": "你是主题路由标注器。你会收到一个主题词库和一段 AI 工作记录（含 [叙述]/[tool]/[tool✗] 三类标签行，报错信号已在行内）。你的任务：【只能从词库中选出】与工作记录【核心工作对象】最相",
+ "promptFull": "你是主题路由标注器。你会收到一个主题词库和一段 AI 工作记录（含 [叙述]/[tool]/[tool✗] 三类标签行，报错信号已在行内）。你的任务：【只能从词库中选出】与工作记录【核心工作对象】最相关的主题关键词，每行一个，最多 5 个。禁止自创词库外的词；【必须与词库逐字完全一致，禁止近似词、拆分或拼接】；词库内确实无合适项时只输出：无。只输出词本身，不要解释、不要编号。\n\n判定步骤（按序）：先从记录中确定核心工作对象（被实际调用、创建、修改、调试或报错的具体工具/模块/机制），再拿该对象去词库找逐字词条；严禁先浏览词库再从记录找理由。\n\n纪律（共四条，按优先级）：\n1. 凡核心对象在词库有逐字词条，必须输出——这条优先于其他一切纪律，不得因保守弃选。[tool]/[tool✗] 行中实际被调用或报错的工具与模块默认视为核心对象。\n2. 区分核心与提及：去掉该词所在句子后记录的主要工作不变，即为提及，不选。\n3. 元叙述排除：记录若是在讨论本路由/词库/评测/会话检索机制本身，相关词条（判定类、记忆检索类、上下文管理类）不选，除非确实在改这些模块的代码。\n4. 通常只选 1-2 个词：除核心对象外，顺带报错或背景提及的词一律不补选；宁少勿滥，找不到逐字词条就输出：无。\n",
+ "details": [
+  {
+   "id": "R01",
+   "verdict": "TP",
+   "expected": [
+    "openspec-opsx"
+   ],
+   "answer": [],
+   "raw": "无",
+   "ok": false,
+   "note": "半采纳：确认相关性"
+  },
+  {
+   "id": "R02",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "诊断会话的元叙述被误命中"
+  },
+  {
+   "id": "R03",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "quant 手术会话，跨域词误命中"
+  },
+  {
+   "id": "R04",
+   "verdict": "TP+FP",
+   "expected": [],
+   "answer": [
+    "openspec",
+    "opsx"
+   ],
+   "raw": "openspec\nopsx",
+   "ok": false,
+   "note": "混合批：1 命中 2 误——已提示集合抑制后混合批仍出现"
+  },
+  {
+   "id": "R05",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "审计元叙述"
+  },
+  {
+   "id": "R06",
+   "verdict": "TP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "wayfinding 会话引用"
+  },
+  {
+   "id": "R07",
+   "verdict": "TP",
+   "expected": [
+    "pi-internal-all"
+   ],
+   "answer": [
+    "compaction",
+    "models.json"
+   ],
+   "raw": "compaction\nmodels.json",
+   "ok": false,
+   "note": "本会话：消息模型调查采纳"
+  },
+  {
+   "id": "R08",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "重复域噪音：已熟知的领域仍推"
+  },
+  {
+   "id": "R09",
+   "verdict": "TP",
+   "expected": [
+    "vitest"
+   ],
+   "answer": [
+    "vitest"
+   ],
+   "raw": "vitest",
+   "ok": true,
+   "note": "本会话：vitest 陷阱场景精确命中"
+  },
+  {
+   "id": "R10",
+   "verdict": "TP",
+   "expected": [
+    "llmjudge"
+   ],
+   "answer": [],
+   "raw": "无",
+   "ok": false,
+   "note": "混合精度但主题准：1/2 候选相关——prompt 优化阶段的实时样本（16:31）"
+  },
+  {
+   "id": "R11",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "元工作重复推：对建设者本人推系统自身记忆——与 R02/R05 同族（元叙述/元工作误命中）"
+  },
+  {
+   "id": "R12",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "主题对资产错型：主题词命中但候选资产非任务所需（泛域资产抢占）"
+  },
+  {
+   "id": "R13",
+   "verdict": "TP",
+   "expected": [
+    "npm-update"
+   ],
+   "answer": [
+    "判定路由",
+    "记忆检索",
+    "npm-update"
+   ],
+   "raw": "判定路由\n记忆检索\nnpm-update",
+   "ok": true,
+   "note": "2/3 采纳——验证 ephemeral 链路时的相关命中"
+  },
+  {
+   "id": "R14",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "read 操作的路径词触发泛域联想（read 记忆文件→推更多记忆）——自引用循环的代价"
+  },
+  {
+   "id": "R15",
+   "verdict": "TP",
+   "expected": [
+    "toolresult"
+   ],
+   "answer": [],
+   "raw": "无",
+   "ok": false,
+   "note": "高价值命中：SDK 事件表正是修 bug 所需；词库牵引（串位）但无伤"
+  },
+  {
+   "id": "R16",
+   "verdict": "TP",
+   "expected": [
+    "hook"
+   ],
+   "answer": [
+    "pi",
+    "hook",
+    "events",
+    "message"
+   ],
+   "raw": "pi\nhook\nevents\nmessage",
+   "ok": true,
+   "note": "精确命中：ToolResultMessage.content=text 块的真相来源"
+  },
+  {
+   "id": "R17",
+   "verdict": "TP",
+   "expected": [
+    "vitest",
+    "mock策略"
+   ],
+   "answer": [
+    "vitest",
+    "typecheck",
+    "mock策略"
+   ],
+   "raw": "vitest\ntypecheck\nmock策略",
+   "ok": true,
+   "note": "双命中高价值：正踩坑时推陷阱清单——理想 TP 形态"
+  },
+  {
+   "id": "R18",
+   "verdict": "TP",
+   "expected": [
+    "mock策略"
+   ],
+   "answer": [
+    "mock策略",
+    "toolresult",
+    "message_end"
+   ],
+   "raw": "mock策略\ntoolresult\nmessage_end",
+   "ok": true,
+   "note": "渐进追踪：主题词随工作演进（npm→vitest→mock）——判定器跟上了工作流"
+  },
+  {
+   "id": "R19",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "滞后命中：主题词反映上一阶段工作（发版/测试），与当前标注任务错位——判定窗口的时滞代价"
+  },
+  {
+   "id": "R20",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [
+    "distill",
+    "processor"
+   ],
+   "raw": "distill\nprocessor",
+   "ok": false,
+   "note": "readTracker 盲区：非 read 通道的知识装载（prompt 注入/技能加载）不追踪——已知内容仍推（FP 模式⑤）"
+  },
+  {
+   "id": "R21",
+   "verdict": "TP",
+   "expected": [
+    "openspec-opsx"
+   ],
+   "answer": [
+    "openspec",
+    "opsx",
+    "子代理"
+   ],
+   "raw": "openspec\nopsx\n子代理",
+   "ok": true,
+   "note": "子代理侧验证：注入对只读侦察型子代理同样可达且可采纳（11-24 15:06，1.4.x 前时代）"
+  },
+  {
+   "id": "R22",
+   "verdict": "TP",
+   "expected": [
+    "skill"
+   ],
+   "answer": [
+    "expandprompttemplates",
+    "模板"
+   ],
+   "raw": "expandprompttemplates\n模板",
+   "ok": false,
+   "note": "一批三中：openspec 收尾设计任务的知识需求面"
+  },
+  {
+   "id": "R23",
+   "verdict": "TP+FP",
+   "expected": [],
+   "answer": [
+    "subagent-spawn-runtime",
+    "subagent-timeout-config"
+   ],
+   "raw": "subagent-spawn-runtime\nsubagent-timeout-config",
+   "ok": false,
+   "note": "同批 2 中 4 错——spec 资产命中价值高但泛域记忆污染同批"
+  },
+  {
+   "id": "R24",
+   "verdict": "TP",
+   "expected": [
+    "ask-user"
+   ],
+   "answer": [],
+   "raw": "无",
+   "ok": false,
+   "note": "设计判据型命中：正在设计 D13 时推相关实证记忆"
+  },
+  {
+   "id": "R25",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [
+    "mdbook"
+   ],
+   "raw": "mdbook",
+   "ok": false,
+   "note": "重复轰炸铁证（1.4.0 前无已提示集合时代）——同资产推≥5 次；已提示集合修复的直接动机"
+  },
+  {
+   "id": "R26",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "最严重重复轰炸样本：同一资产单会话内推≥6 次；AI 被迫每次叙述'再次无关'——这些叙述又入池引发新判定（自引用循环实证）"
+  },
+  {
+   "id": "R27",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [
+    "roadmap",
+    "planpath"
+   ],
+   "raw": "roadmap\nplanpath",
+   "ok": false,
+   "note": "泛域文档类资产（roadmap/mdbook/书本哲学）在 opsx 收尾任务中的系统性误命中——'任务涉及文档工作→推文档记忆'的域联想错误"
+  },
+  {
+   "id": "R28",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "跨域资产噪声：代码恢复/git 历史域与纯设计推演任务的错配"
+  },
+  {
+   "id": "R29",
+   "verdict": "FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "子代理侦察叙述中的技术词（find/grep/schema）触发基础设施类记忆联想——工具操作叙述的词汇面误命中"
+  },
+  {
+   "id": "R31",
+   "verdict": "TP+FP",
+   "expected": [],
+   "answer": [],
+   "raw": "无",
+   "ok": true,
+   "note": "双坐实：①词库牵引（判定器联想词库而非叙述实义）；②展示截断（slice(0,3) 隐藏促成匹配的词——可解释性缺口）；另发现 batch-9b576ca1 选了 read,write,bash 工具名当选词（泛词形态）"
+  }
+ ]
+}
