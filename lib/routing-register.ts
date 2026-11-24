@@ -13,8 +13,9 @@ export function registerRouting(pi: ExtensionAPI): void {
 		if (ctx) router.setJudgeContext(ctx);
 		router.accumulate(event as { message?: { content?: unknown } });
 		// 同步判定（对齐 shepherd 归因猜测模式）：settle 前完成；含 toolCall = 工具循环中间，注入由下一次循环请求自然 drain，不走 settle 链路
-		const blocks = (event as { message?: { content?: Array<{ type: string }> } })?.message?.content ?? [];
-		const endOfTurn = !blocks.some((b) => b.type === "toolCall");
+		const c = (event as { message?: { content?: unknown } })?.message?.content;
+		const blocks = Array.isArray(c) ? (c as Array<{ type?: string }>) : []; // content 可为 string（UserMessage 形态）
+		const endOfTurn = !blocks.some((b) => b?.type === "toolCall");
 		await router.maybeTrigger(pi, { endOfTurn });
 	});
 

@@ -174,4 +174,16 @@ describe("registerRouting 事件接线", () => {
 		await new Promise((r) => setTimeout(r, 10));
 		expect(emitMock).not.toHaveBeenCalled();
 	});
+
+	it("message_end 的 content 为 string（UserMessage 形态）不炸：handler 链正常走完", async () => {
+		judgeMock.mockResolvedValue([]);
+		const pi = piStub();
+		registerRouting(pi);
+		// 1.4.3 回归：content 字符串形态曾致 blocks.some is not a function
+		await expect(
+			pi.__handlers["message_end"][0]({ message: { role: "user", content: "纯字符串叙述长文本文本".repeat(60) } }),
+		).resolves.toBeUndefined();
+		// 未炸且未误判（string 不入池，无判定发生）
+		expect(judgeMock).not.toHaveBeenCalled();
+	});
 });
