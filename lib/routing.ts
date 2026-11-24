@@ -165,7 +165,14 @@ export class MemoryRouter {
 			const candidates = hits.filter((a) => !this.readTracker.hasRead(a.entry)).slice(0, 3);
 			if (candidates.length === 0) return;
 
-			const lines = candidates.map((a) => `- ${a.entry}（${a.desc.slice(0, 60)}）`).join("\n");
+			const lines = candidates.map((a) => {
+				const full = a.entry.startsWith("memory/")
+					? `~/.pi/agent/${a.entry}`
+					: a.entry.startsWith(".pi/memory/")
+						? `${this.cwd}/${a.entry}`
+						: `${this.cwd}/${a.entry}`;
+				return `- ${full}（${a.desc.slice(0, 60) || "关键词见文件名"}）`;
+			}).join("\n");
 			const stems = candidates.map((a) => (a.entry.split("/").pop() ?? "").split("--")[0]).join("、");
 			pi.events.emit("ephemeral:hint", {
 				text: `💡 记忆路由：本段工作与以下知识资产相关（你尚未读过）：\n${lines}\n如相关请 read；无关可忽略。`,

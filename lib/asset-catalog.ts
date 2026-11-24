@@ -26,7 +26,10 @@ export function collectMemoryAssets(cwd: string): KnowledgeAsset[] {
 		try {
 			for (const f of fs.readdirSync(dir)) {
 				if (!f.endsWith(".md") || f === "MEMORY.md") continue;
-				assets.push({ entry: `${prefix}/${f}`, desc: "" });
+				// desc = 文件名 kw 段（--kw1,kw2,kw3 → "kw1 / kw2 / kw3"）——零 IO、总有值
+				const kwSeg = f.replace(/\.md$/, "").split("--")[1] ?? "";
+				const desc = kwSeg.split(",").map(s => s.trim()).filter(Boolean).slice(0, 5).join(" / ");
+				assets.push({ entry: `${prefix}/${f}`, desc });
 			}
 		} catch {
 			// 目录不存在（L2 常见）：跳过
