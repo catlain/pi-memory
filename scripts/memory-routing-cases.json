@@ -237,6 +237,20 @@
       "reaction": "子代理同一工作周期内收约 16 次注入：采纳资产 6-7 个（TP），无关/重复推 9-10 个（FP）——FP 率约 60%",
       "verdict": "汇总",
       "note": "子代理周期定量基线（1.4.0 前时代）：修复前 FP 率高+重复轰炸严重；当前 1.5.0 已提示集合+readTracker 双闸后待重测同样本型"
+    },
+    {
+      "id": "R31",
+      "sid": "01a2065c",
+      "reaction": "主题前3词准（记忆检索·判定路由·session_search，采纳 read session-search-grep-preview）；候选 feishu-gateway-impl 无关——日志实证：实际选词 5 个，第 4 词「话题绑定」（叙述中无此概念，词库牵引）倒排命中 feishu",
+      "verdict": "TP+FP",
+      "note": "双坐实：①词库牵引（判定器联想词库而非叙述实义）；②展示截断（slice(0,3) 隐藏促成匹配的词——可解释性缺口）；另发现 batch-9b576ca1 选了 read,write,bash 工具名当选词（泛词形态）"
+    },
+    {
+      "id": "R32",
+      "sid": "01a2065c",
+      "reaction": "AI 处理注入的叙述（'路由评估：三条均无关忽略'）持续入池触发新判定（日志 batch-f56e3214/9b576ca1 实证）——已提示集合挡资产重推但判定仍被触发（空转成本）",
+      "verdict": "观察",
+      "note": "自引用循环未根治：需在 accumulate 或判定 prompt 层排除'路由评估/忽略'类元叙述（与模式①同源）——prompt 优化的覆盖面证据"
     }
   ],
   "judge_entries_sample": [
