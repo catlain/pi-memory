@@ -1,8 +1,28 @@
 /**
  * routing 扩展接线：事件钩子（message_end/tool_execution_start/tool_result）+ 命令注册
  */
+import { appendFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { contentBlocksOf } from "./msg-shapes";
 import { MemoryRouter, loadConfig, setRoutingConfig } from "./routing";
+
+const DUMP_PATH = join(homedir(), ".pi/agent/logs/memory-routing-events.jsonl");
+
+/** 抓真实事件形态进 fixture（settings memoryRouting.dumpEvents=true 启用；长文本截 300 字防膨胀） */
+function dumpEvent(hook: string, event: unknown): void {
+	try {
+		const msg = (event as { message?: { role?: string; content?: unknown } }).message;
+		const m =
+			msg == null
+				? { noMessage: true }
+				: { role: msg.role, content: typeof msg.content === "string" ? msg.content.slice(0, 300) : msg.content };
+		appendFileSync(DUMP_PATH, JSON.stringify({ hook, message: m }) + "\n", "utf8");
+	} catch {
+		/* dump 失败静默 */
+	}
+}
 
 export function registerRouting(pi: ExtensionAPI): void {
 	const cfg = loadConfig(process.cwd());
@@ -11,11 +31,10 @@ export function registerRouting(pi: ExtensionAPI): void {
 
 	pi.on("message_end", async (event: unknown, ctx: unknown) => {
 		if (ctx) router.setJudgeContext(ctx);
+		if (cfg.dumpEvents) dumpEvent("message_end", event);
 		router.accumulate(event as { message?: { content?: unknown } });
 		// 同步判定（对齐 shepherd 归因猜测模式）：settle 前完成；含 toolCall = 工具循环中间，注入由下一次循环请求自然 drain，不走 settle 链路
-		const c = (event as { message?: { content?: unknown } })?.message?.content;
-		const blocks = Array.isArray(c) ? (c as Array<{ type?: string }>) : []; // content 可为 string（UserMessage 形态）
-		const endOfTurn = !blocks.some((b) => b?.type === "toolCall");
+		const endOfTurn = !contentBlocksOf(event).some((b) => b?.type === "toolCall");
 		await router.maybeTrigger(pi, { endOfTurn });
 	});
 

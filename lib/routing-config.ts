@@ -7,6 +7,8 @@ export interface RoutingConfig {
 	includeSpecs: boolean;
 	/** 显式判定模型（缺省 = judgeModel 顶层/legacy/会话默认三层链） */
 	judgeModel: string;
+	/** 调试：抓真实事件形态进 fixture（写入 ~/.pi/agent/logs/memory-routing-events.jsonl，抓完关闭） */
+	dumpEvents?: boolean;
 }
 
 const DEFAULTS: RoutingConfig = { enabled: true, batchChars: 5000, includeSpecs: true, judgeModel: "" };

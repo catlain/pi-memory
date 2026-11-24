@@ -2,6 +2,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { createJudge, type JudgeInstance } from "@pi-atelier/shared-utils/judge";
 import { collectMemoryAssets, collectSpecAssets, type KnowledgeAsset } from "./asset-catalog";
 import { buildHintText, buildVocabulary, matchAssets, parseKeywords } from "./keyword-routing";
+import { contentBlocksOf, roleOf } from "./msg-shapes";
 import { PromptedSet } from "./prompted-set";
 import { loadConfig, type RoutingConfig } from "./routing-config";
 import { createReadTracker } from "./read-tracker";
@@ -66,10 +67,9 @@ export class MemoryRouter {
 	accumulate(event: unknown): void {
 		if (!this.config.enabled) return; // 快照级；跨会话 off 感知靠 maybeTrigger 热读
 		try {
-			const msg = (event as { message?: { role?: string; content?: unknown } }).message;
 			// 只判 assistant：toolResult 的 text 块是工具结果正文，入池即秒满门槛（D3：成功结果不入池）
-			if (msg?.role !== "assistant") return;
-			const blocks = Array.isArray(msg?.content) ? (msg.content as Array<Record<string, unknown>>) : [];
+			if (roleOf(event) !== "assistant") return;
+			const blocks = contentBlocksOf(event) as Array<Record<string, unknown>>;
 			const lines: string[] = [];
 			for (const b of blocks) {
 				if (b.type === "text" && typeof b.text === "string" && b.text.trim()) {
@@ -180,8 +180,7 @@ export class MemoryRouter {
 
 			// 工具信号计入叙述通道，批量判定后清理当前池
 			pi.events.emit("ephemeral:hint", buildHintText(candidates, keywords, this.cwd));
-			// 回合末才走 settle-continue（工具循环中间的注入由本回合下一次请求自然 drain）；
-			// 空 sendMessage 仅作 continue 队列燃料，settle 消费时补发（防空消息被中途 flush 后非法 continue）
+			// 回合末才 settle-continue；工具循环中间的注入由下一循环请求自然 drain；settle 消费时补发队列燃料，防中途 flush 后非法 continue
 			if (opts?.endOfTurn !== false) this.pendingHintCount = 1;
 		} catch {
 			/* fail-open */
