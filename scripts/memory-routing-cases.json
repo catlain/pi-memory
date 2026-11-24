@@ -1,0 +1,344 @@
+{
+  "prompt_under_test": "见 lib/routing.ts SYSTEM_PROMPT（v3.4 词表选择版）",
+  "verdict_legend": "TP=AI采纳/确认相关 FP=AI明确忽略 '??'=待复核",
+  "judge_stats": {
+    "total_ok_with_answer": 460,
+    "batch_chars_p50": 2088,
+    "batch_chars_max": 21818,
+    "judge_ms_avg": 5194,
+    "model_dist": {
+      "ctx.model": 460
+    }
+  },
+  "answer_top": {
+    "rust": 6,
+    "rust,distill,processor,源码验证": 3,
+    "星烁公式": 2,
+    "诊断,误判,自我感知,探针脚本,客观证据": 2,
+    "桑多涅,断点,子代理,时间线取证,恢复": 1,
+    "rust,openspec,coding-plan,buildrules,覆盖配置": 1,
+    "kernel-chain-buff-rescan,extension-buff-entries-m6,扩展可观测性,beta,黑盒": 1,
+    "codebase-recon,rust,read,coding-plan,探针脚本": 1,
+    "kernel-chain-buff-rescan,扩展可观测性,wasm-bindgen,探针脚本,桑多涅": 1,
+    "shepherd,heredoc,temp脚本,沙箱隔离,distill": 1,
+    "shepherd,distill,processor,记忆检索,bash": 1,
+    "wasm-bindgen,e0119,星烁公式,桑多涅,锚点": 1,
+    "自定义字段,文件格式": 1,
+    "模板,记忆检索,锚点路由": 1,
+    "rust,distill,processor,自定义字段,记忆检索": 1
+  },
+  "cases": [
+    {
+      "id": "R01",
+      "sid": "01a20c9e",
+      "reaction": "mona-extension-kernel-build（wasm-bindgen 相关）——这是项目记忆",
+      "verdict": "TP",
+      "note": "半采纳：确认相关性"
+    },
+    {
+      "id": "R02",
+      "sid": "01a20c9e",
+      "reaction": "记忆路由那条与本诊断无关，忽略",
+      "verdict": "FP",
+      "note": "诊断会话的元叙述被误命中"
+    },
+    {
+      "id": "R03",
+      "sid": "01a2083b",
+      "reaction": "两个新文件与本手术无关（Godot bridge/工具输出格式化），忽略",
+      "verdict": "FP",
+      "note": "quant 手术会话，跨域词误命中"
+    },
+    {
+      "id": "R04",
+      "sid": "01a20b51",
+      "reaction": "openspec-opsx 与本任务直接相关，读之；另两个（arch-guard、godot-bridge）与任务无关",
+      "verdict": "TP+FP",
+      "note": "混合批：1 命中 2 误——已提示集合抑制后混合批仍出现"
+    },
+    {
+      "id": "R05",
+      "sid": "01a20b51",
+      "reaction": "三份资产与本审计任务（fold 六条件凭证核查）无关，忽略",
+      "verdict": "FP",
+      "note": "审计元叙述"
+    },
+    {
+      "id": "R06",
+      "sid": "01a20b51",
+      "reaction": "subagent-mechanism 和 memory-retrieval-archaeology（下略）",
+      "verdict": "TP",
+      "note": "wayfinding 会话引用"
+    },
+    {
+      "id": "R07",
+      "sid": "01a20c5e",
+      "reaction": "pi-internal-all（compaction 内核）和 pi-models-json-overri...（采纳 read）",
+      "verdict": "TP",
+      "note": "本会话：消息模型调查采纳"
+    },
+    {
+      "id": "R08",
+      "sid": "01a20c5e",
+      "reaction": "三条与当前问题关联不大（heredoc 拦截规则已领教），跳过",
+      "verdict": "FP",
+      "note": "重复域噪音：已熟知的领域仍推"
+    },
+    {
+      "id": "R09",
+      "sid": "01a20c5e",
+      "reaction": "vitest-family-pitfalls read（vi.spyOn/doMock 陷阱相关）",
+      "verdict": "TP",
+      "note": "本会话：vitest 陷阱场景精确命中"
+    },
+    {
+      "id": "R10",
+      "sid": "01a20c5e",
+      "reaction": "主题「记忆检索·判定路由·llmjudge」准确命中 prompt 优化任务；shepherd-timing-blindspots 相关采纳 read，check-tool-docs-bugs 弱相关忽略",
+      "verdict": "TP",
+      "note": "混合精度但主题准：1/2 候选相关——prompt 优化阶段的实时样本（16:31）"
+    }
+  ],
+  "judge_entries_sample": [
+    {
+      "batch": "batch-66fe16ad",
+      "chars": 3134,
+      "answer": "subagent-spawn-runtime,subagent-timeout-config,session-scoped-cleanup,code-graph-toolchain,诊断",
+      "model": "ctx.model",
+      "ms": 1727,
+      "input": "\"[叙述] 好，孤儿探针结果拿到了，再补最后两块拼图：pane 列表的身份、以及 pi 主程序对 `--session` 文件的写入模式（决定 ENOENT 后 \""
+    },
+    {
+      "batch": "batch-89a1af54",
+      "chars": 2213,
+      "answer": "subagent-timeout-config,code-graph-toolchain,诊断,实证,孤儿进程",
+      "model": "ctx.model",
+      "ms": 2060,
+      "input": "\"[叙述] 路由又推了两条还没读的 spec（subagent-timeout-config、code-graph-toolchain）和一条诊断纪律记忆。补读验\""
+    },
+    {
+      "batch": "batch-86669d40",
+      "chars": 2073,
+      "answer": "客观证据,探针脚本,回归,源码验证,wasm-bindgen",
+      "model": "ctx.model",
+      "ms": 6589,
+      "input": "\"[叙述] 路由记忆无关，忽略。aether_geo.rs 是 untracked（批 A 新写）。用 mtime 实证批 C 首单（16:07 报告期）未碰它：\""
+    },
+    {
+      "batch": "batch-bb80160b",
+      "chars": 2611,
+      "answer": "subagent-timeout-config,subagent-spawn-runtime,session-scoped-cleanup,时间线取证,subagent",
+      "model": "ctx.model",
+      "ms": 7812,
+      "input": "\"[叙述] 修正一个误判！pane 150/170/205 **不是僵尸 pane**——是三个活着的 catlain 项目 pi 会话（`opsx工序子代理化`\""
+    },
+    {
+      "batch": "batch-6590cf98",
+      "chars": 3456,
+      "answer": "code-graph-toolchain,openspec,源码验证,实证,tasks",
+      "model": "ctx.model",
+      "ms": 1445,
+      "input": "\"[叙述] 对——我推理里有未经证实的环节。两个具体怀疑点需要看源码验证：①`ensure_indexed` 实现本身是否被 cfg 门控影响 ②门控块 1261\""
+    },
+    {
+      "batch": "batch-7b83b9a9",
+      "chars": 2035,
+      "answer": "kernel-chain-buff-rescan,extension-buff-entries-m6,tmp文件,清理,测试",
+      "model": "ctx.model",
+      "ms": 10878,
+      "input": "\"[叙述] 路由记忆无关，忽略。**unified-kernel 4/4 PASS**（欧洛伦/莱依拉/瑞希/真语秘匣全过，无跳过）。核对断点预期的 skirk \""
+    },
+    {
+      "batch": "batch-1c385fa8",
+      "chars": 2005,
+      "answer": "subagent-spawn-runtime,subagent-timeout-config,tool-duration-perception,session-scoped-cleanup,pi-wo",
+      "model": "ctx.model",
+      "ms": 2459,
+      "input": "\"[叙述] 记忆路由那条与本诊断无关，忽略。至此所有环节都有实证了，中间还有一处需要向你**纠错**（我之前说的“spawn 风暴”是误判）。最终结论如下。 -\""
+    },
+    {
+      "batch": "batch-e1820086",
+      "chars": 2236,
+      "answer": "openspec,opsx,子代理,设计,文档",
+      "model": "ctx.model",
+      "ms": 2787,
+      "input": "\"[tool] bash: cd /c/Users/Administrator/.pi/agent/git/github.com/catlain && ls op\""
+    },
+    {
+      "batch": "batch-d30b3b1d",
+      "chars": 2192,
+      "answer": "探针脚本,清理,子代理,测试,暂无",
+      "model": "ctx.model",
+      "ms": 9723,
+      "input": "\"[叙述] 路由记忆三条均与当前收尾无关（memory-management 是记忆文件清理方法论、两个 spec 属已完成批次且复扫已跑完对齐基线），忽略。 \""
+    },
+    {
+      "batch": "batch-8b9231ae",
+      "chars": 2154,
+      "answer": "subagent-spawn-runtime,openspec,pi-workflow,代码库侦察,子代理",
+      "model": "ctx.model",
+      "ms": 1977,
+      "input": "\"[叙述] 继续侦察：先确认 pi-workflow 目录结构（src/ 不存在），同时读任务相关的记忆文件： [tool] bash: cd /c/Users/\""
+    },
+    {
+      "batch": "batch-4460088c",
+      "chars": 2293,
+      "answer": "rust,wasm-bindgen,extension-buff-entries-m6,codebase-recon,子代理",
+      "model": "ctx.model",
+      "ms": 3659,
+      "input": "\"[tool] read: D:\\Project\\genshin_artifact\\.pi\\plans\\subagent-pv-executor-20261124\""
+    },
+    {
+      "batch": "batch-d31a444c",
+      "chars": 2072,
+      "answer": "wasm,探针脚本,锚点路由,源码验证,客观证据",
+      "model": "ctx.model",
+      "ms": 8946,
+      "input": "\"[叙述] 时间戳链已证：源码（nefer.rs 15:48 / zibai.rs 15:32 / charconfig 13:39 / TF 15:33）< w\""
+    },
+    {
+      "batch": "batch-480ae112",
+      "chars": 2566,
+      "answer": "db-dead-space-management,ducklake-storage,memory-guard-four-defaults,factor_data,oom",
+      "model": "ctx.model",
+      "ms": 5032,
+      "input": "\"[叙述] 66 DONE 但出现 3 ERROR——先定性： [tool] bash: cd /d/Project/Quant && sed 's/\\x1b\\[\""
+    },
+    {
+      "batch": "batch-fc9bec92",
+      "chars": 2154,
+      "answer": "openspec,code-graph-toolchain,code-graph,设计,mcp",
+      "model": "ctx.model",
+      "ms": 14981,
+      "input": "\"[叙述] 开始 2.2。先建任务跟踪，然后吃透 design.md 对 2.2 的具体设计： [tool] todo: {\"action\":\"create\",\"\""
+    },
+    {
+      "batch": "batch-a9f7aa8e",
+      "chars": 2102,
+      "answer": "subagent-spawn-runtime,openspec,pi-workflow,tools白名单",
+      "model": "ctx.model",
+      "ms": 7073,
+      "input": "\"[tool] read: C:\\Users\\Administrator\\.pi\\agent\\memory\\subagent-mechanism--子代理,pi-\""
+    },
+    {
+      "batch": "batch-78f8828a",
+      "chars": 2038,
+      "answer": "memory-guard-four-defaults,oom,批载护栏,落库性能,票级增量",
+      "model": "ctx.model",
+      "ms": 6217,
+      "input": "\"[tool] read: D:\\Project\\Quant\\.pi\\memory\\oom-write-perf-family--OOM,预热,批载护栏,落库性能\""
+    },
+    {
+      "batch": "batch-9c1c5423",
+      "chars": 2090,
+      "answer": "探针脚本,源码验证,客观证据,temp脚本,诊断",
+      "model": "ctx.model",
+      "ms": 8537,
+      "input": "\"[叙述] 实施参数已明确。先读 nefer.rs 确认 NeferEffect 逻辑，再写独立换参脚本。 [tool] read: D:\\Project\\gen\""
+    },
+    {
+      "batch": "batch-7bedc12f",
+      "chars": 3489,
+      "answer": "openspec,subagent-spawn-runtime,shepherd,write,grep",
+      "model": "ctx.model",
+      "ms": 2574,
+      "input": "\"[叙述] 继续写两个 spec 文件： [tool] write: C:\\Users\\Administrator\\.pi\\agent\\git\\github.co\""
+    },
+    {
+      "batch": "batch-4c041f3e",
+      "chars": 2283,
+      "answer": "session-scoped-cleanup,进程判活,taskkill,openspec,子代理",
+      "model": "ctx.model",
+      "ms": 3776,
+      "input": "\"[叙述] 简单说：**B 和 C 用的是同一套技术（等进程死透再删目录），区别只在于“缝几张口”**。 ## B：只缝一个口 你今天踩的坑只有一条路： `\""
+    },
+    {
+      "batch": "batch-97529c32",
+      "chars": 2181,
+      "answer": "code-graph-toolchain,codebase-recon,recon,duckdb,缓存",
+      "model": "ctx.model",
+      "ms": 2011,
+      "input": "\"[叙述] 记忆路由的两个新文件与本手术无关（Godot bridge/工具输出格式化），忽略。侦察完毕，设计定稿。先查四工具的测试调用面（签名变更的波及）： [\""
+    },
+    {
+      "batch": "batch-f7a0518b",
+      "chars": 2107,
+      "answer": "oom,batch-single-factor-backtest,distill,processor,静默失效",
+      "model": "ctx.model",
+      "ms": 4738,
+      "input": "\"[叙述] 两次读数互相矛盾（32→66→22），文件 76 行与 mtime 16:31:46 才是实况。先对齐真相再修正监控： [tool] bash: cd\""
+    },
+    {
+      "batch": "batch-2df2f958",
+      "chars": 2907,
+      "answer": "kernel-chain-buff-rescan,extension-buff-entries-m6,temp脚本,客观证据,源码验证",
+      "model": "ctx.model",
+      "ms": 2872,
+      "input": "\"[叙述] 批 A 报告（11-23 232157）已见 AetherGeo idx5 记录。继续搜其余 5 项的批 A 既有证据： [tool] grep: D\""
+    },
+    {
+      "batch": "batch-82458c98",
+      "chars": 2081,
+      "answer": "subagent-spawn-runtime,subagent-supervisor-bridge,openspec,opsx,设计",
+      "model": "ctx.model",
+      "ms": 7118,
+      "input": "\"[叙述] 收到任务。先按步骤读取必要的上下文文件。 [tool] bash: ls openspec/changes/ && ls openspec/chang\""
+    },
+    {
+      "batch": "batch-4c4231bd",
+      "chars": 2127,
+      "answer": "subagent-spawn-runtime,openspec,pi-workflow,placeholder,inv-adr",
+      "model": "ctx.model",
+      "ms": 7738,
+      "input": "\"[叙述] 正在写 proposal，路由推的两条 openspec 写作规范相关，快速读一下避免踩坑。 [tool] read: C:\\Users\\Admini\""
+    },
+    {
+      "batch": "batch-703f9783",
+      "chars": 2185,
+      "answer": "vitest,mock策略,记忆路由,覆盖率,记忆检索",
+      "model": "ctx.model",
+      "ms": 3808,
+      "input": "\"[叙述] 按指引读取 vitest-family（刚踩的两个陷阱——ESM namespace 不可 spy、doMock 模块缓存——值得对照它的系统化清单）\""
+    },
+    {
+      "batch": "batch-6386b227",
+      "chars": 2062,
+      "answer": "codebase-recon,rust,记忆检索,探针脚本,e0119",
+      "model": "ctx.model",
+      "ms": 3721,
+      "input": "\"[叙述] 收到批 C 第二单。先读记忆、侦察知识和参照物，再按 Aino → Lauma 顺序执行。 [tool] read: C:\\Users\\Adminis\""
+    },
+    {
+      "batch": "batch-6c611686",
+      "chars": 2052,
+      "answer": "subagent-spawn-runtime,tools白名单,mcp-exposure-config,code-graph-toolchain,openspec",
+      "model": "ctx.model",
+      "ms": 7022,
+      "input": "\"[tool] read: ~/.pi/agent/memory/prompt-template-no-angle-brackets--placeholder,h\""
+    },
+    {
+      "batch": "batch-45db8014",
+      "chars": 2316,
+      "answer": "openspec,subagent-spawn-runtime,design-note-lifecycle,shepherd,子代理",
+      "model": "ctx.model",
+      "ms": 3252,
+      "input": "\"[叙述] 路由推的 aging 记忆与当前任务无关，忽略。按 design 闸门流程：先读子系统注册表定标签。 [tool] bash: cat /c/User\""
+    },
+    {
+      "batch": "batch-548db1c1",
+      "chars": 2383,
+      "answer": "code-graph-toolchain,code-graph,rust,cargo,rebuild",
+      "model": "ctx.model",
+      "ms": 1375,
+      "input": "\"[叙述] 路由的三个文件与本手术无关（git 恢复/duckdb/jiti——均为其他领域），忽略。写 query_ctx.rs： [tool] write: \""
+    },
+    {
+      "batch": "batch-603de2ea",
+      "chars": 2147,
+      "answer": "codebase-recon,shepherd,探针脚本,记忆检索,诊断",
+      "model": "ctx.model",
+      "ms": 2207,
+      "input": "\"[叙述] 路由记忆评估：code_recovery（git/jsonl 恢复）与 memory-retrieval-archaeology（记忆检索方法论）均与\""
+    }
+  ]
+}
