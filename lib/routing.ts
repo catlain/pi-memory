@@ -64,6 +64,13 @@ export class MemoryRouter {
 	private charCount = 0;
 	private judgedBatches = new Set<string>();
 	private judgeInstance: JudgeInstance<string[]> | null = null;
+	private pendingCtx: unknown = null;
+
+	/** message_end 事件的 ExtensionContext —— judge 调 LLM 的必要通道，首个事件到达时注入 */
+	setJudgeContext(ctx: unknown): void {
+		this.pendingCtx = ctx;
+		if (this.judgeInstance) (this.judgeInstance as unknown as { setContext(c: unknown): void }).setContext(ctx);
+	}
 	readonly readTracker = createReadTracker();
 
 	constructor(private cwd: string, config: RoutingConfig) {
@@ -124,6 +131,7 @@ export class MemoryRouter {
 				judgeLogPath: `${process.env.USERPROFILE ?? process.env.HOME ?? ""}/.pi/agent/logs/memory-routing-llmjudge.log`,
 				legacySectionKeys: ["memoryRouting", "shepherd"],
 			});
+			if (this.pendingCtx != null) (this.judgeInstance as unknown as { setContext(c: unknown): void }).setContext(this.pendingCtx);
 		}
 		return this.judgeInstance;
 	}

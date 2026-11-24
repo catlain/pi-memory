@@ -10,6 +10,7 @@ export function registerRouting(pi: ExtensionAPI): void {
 	const pendingTools = new Map<string, { toolName: string; args: unknown }>();
 
 	pi.on("message_end", async (event: unknown, ctx: unknown) => {
+		if (ctx) router.setJudgeContext(ctx);
 		router.accumulate(event as { message?: { content?: unknown } });
 		void router.maybeTrigger(pi);
 	});
