@@ -130,10 +130,10 @@ describe("字符池触发（三信号源）", () => {
 			expect(emitMock).not.toHaveBeenCalled();
 		});
 
-		it("两段共用同一 contextLabel（日志可按批对账）", async () => {
+		it("S2 标签 = S1 标签 + →map(领域名)（日志一行还原决策链）", async () => {
 			router.accumulate(assistantMsg(longText));
 			await router.maybeTrigger(piStub());
-			expect(topicMock.mock.calls[0][0].contextLabel).toBe(mapMock.mock.calls[0][0].contextLabel);
+			expect(mapMock.mock.calls[0][0].contextLabel).toBe(`${topicMock.mock.calls[0][0].contextLabel}→map(git)`);
 		});
 	});
 

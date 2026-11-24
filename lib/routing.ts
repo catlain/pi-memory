@@ -4,9 +4,8 @@
  */
 import { createJudge, type JudgeInstance } from "@pi-atelier/shared-utils/judge";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { collectMemoryAssets, collectSpecAssets } from "./asset-catalog";
+import { collectMemoryAssets, collectSpecAssets, type KnowledgeAsset } from "./asset-catalog";
 import { buildVocabulary, matchAssets, buildHintText, parseKeywords, parseTopics, MAP_SYSTEM_PROMPT, TOPIC_SYSTEM_PROMPT } from "./keyword-routing";
-import type { KnowledgeAsset } from "./asset-catalog";
 import { createReadTracker } from "./read-tracker";
 import { loadConfig, setRoutingConfig, type RoutingConfig } from "./routing-config";
 import { SignalPool } from "./signal-pool";
@@ -137,6 +136,8 @@ export class MemoryRouter {
 			question: "为下列领域名称在词库中找出最相关的词（只输出词库原样词，每行一个，最多 5 个，均不相关输出“无”）。\n词库：" + vocab.join("、"),
 			text: topics.join("\n"),
 			...judgeOpts,
+			// 日志标签带领域名：两段共用 batch id，靠后缀区分 S1/S2（judge 日志只记 contextLabel）
+			contextLabel: `${contextLabel}→map(${topics.join("/")})`,
 		});
 		return mapped ?? [];
 	}
