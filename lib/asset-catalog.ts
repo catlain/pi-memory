@@ -13,6 +13,8 @@ export interface KnowledgeAsset {
 	entry: string;
 	/** 一句话描述（关键词 or Purpose 首句） */
 	desc: string;
+	/** 显式词表（spec frontmatter `keywords: [a, b, c]` 解析产物；缺省走 entry 解析回退） */
+	kws?: string[];
 }
 
 /** L1+L2 记忆条目：memory 目录扫描（MEMORY.md 索引文件本身除外） */
@@ -38,7 +40,22 @@ export function collectMemoryAssets(cwd: string): KnowledgeAsset[] {
 	return assets;
 }
 
-/** spec 清单：openspec/specs/<cap>/spec.md 的 capability + Purpose 首句 */
+/** spec frontmatter 的 keywords 行解析：`keywords: [a, b, c]` 或 `keywords:\n  - a` → 词数组（无 frontmatter/无字段 → null，走 capability 回退） */
+function parseSpecKeywords(text: string): string[] | null {
+	const fm = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+	if (!fm) return null;
+	const inline = fm[1].match(/^keywords:\s*\[(.*)\]\s*$/m);
+	if (inline) {
+		return inline[1].split(",").map((s) => s.trim()).filter((s) => s.length >= 2).map((s) => s.toLowerCase());
+	}
+	const blockMatch = fm[1].match(/^keywords:\s*\n((?:\s+-\s+.+\n?)+)/m);
+	if (blockMatch) {
+		return blockMatch[1].split("\n").map((l) => l.replace(/^\s*-\s*/, "").trim()).filter((s) => s.length >= 2).map((s) => s.toLowerCase());
+	}
+	return null;
+}
+
+/** spec 清单：openspec/specs/<cap>/spec.md 的 keywords（frontmatter）+ Purpose 首句 */
 export function collectSpecAssets(cwd: string): KnowledgeAsset[] {
 	const specsDir = path.join(cwd, "openspec", "specs");
 	const assets: KnowledgeAsset[] = [];
@@ -47,13 +64,15 @@ export function collectSpecAssets(cwd: string): KnowledgeAsset[] {
 			const p = path.join(specsDir, cap, "spec.md");
 			try {
 				const text = fs.readFileSync(p, "utf8");
+				const kws = parseSpecKeywords(text);
 				const m = text.match(/^##\s*Purpose\s*\n+(.+)$/m);
 				const purpose = m?.[1] ?? "";
 				const firstSentence =
 					purpose.split(/[。\n]/)[0]?.replace(/^#+\s*/, "").trim() ?? "";
 				assets.push({
 					entry: `openspec/specs/${cap}/spec.md`,
-					desc: firstSentence.slice(0, 120),
+				desc: firstSentence.slice(0, 120),
+					...(kws && { kws }),
 				});
 			} catch {
 				// 单条读失败跳过

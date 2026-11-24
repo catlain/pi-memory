@@ -6,6 +6,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { collectMemoryAssets, collectSpecAssets } from "../lib/asset-catalog";
+import { kwOf } from "../lib/keyword-routing";
 
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "assetcat-"));
 
@@ -53,5 +54,52 @@ describe("collectSpecAssets", () => {
 	});
 	it("openspec 目录不存在返回空数组", () => {
 		expect(collectSpecAssets(tmpRoot)).toEqual([]);
+	});
+	it("frontmatter inline keywords 解析入 kws（小写化）", () => {
+		fs.mkdirSync(path.join(tmpRoot, "openspec", "specs", "cap-kw"), { recursive: true });
+		fs.writeFileSync(
+			path.join(tmpRoot, "openspec", "specs", "cap-kw", "spec.md"),
+			"---\nkeywords: [LLM-Judge, 串位, 漂移]\n---\n\n# Spec: x\n\n## Purpose\n做某事。\n",
+		);
+		const specs = collectSpecAssets(tmpRoot);
+		const a = specs.find((s) => s.entry.includes("cap-kw"));
+		expect(a?.kws).toEqual(["llm-judge", "串位", "漂移"]);
+	});
+	it("frontmatter block 列表式 keywords 解析", () => {
+		fs.mkdirSync(path.join(tmpRoot, "openspec", "specs", "cap-bl"), { recursive: true });
+		fs.writeFileSync(
+			path.join(tmpRoot, "openspec", "specs", "cap-bl", "spec.md"),
+			"---\nkeywords:\n  - Foo\n  - bar\n---\n\n# Spec: x\n\n## Purpose\n做某事。\n",
+		);
+		const specs = collectSpecAssets(tmpRoot);
+		const a = specs.find((s) => s.entry.includes("cap-bl"));
+		expect(a?.kws).toEqual(["foo", "bar"]);
+	});
+	it("无 frontmatter / 空字段 → kws 缺省（走 capability 回退）", () => {
+		fs.mkdirSync(path.join(tmpRoot, "openspec", "specs", "cap-no"), { recursive: true });
+		fs.writeFileSync(
+			path.join(tmpRoot, "openspec", "specs", "cap-no", "spec.md"),
+			"# Spec: 无 frontmatter\n\n## Purpose\n做某事。\n",
+		);
+		fs.mkdirSync(path.join(tmpRoot, "openspec", "specs", "cap-emp"), { recursive: true });
+		fs.writeFileSync(
+			path.join(tmpRoot, "openspec", "specs", "cap-emp", "spec.md"),
+			"---\ntitle: 别的字段\n---\n\n## Purpose\n做某事。\n",
+		);
+		const specs = collectSpecAssets(tmpRoot);
+		expect(specs.find((s) => s.entry.includes("cap-no"))?.kws).toBeUndefined();
+		expect(specs.find((s) => s.entry.includes("cap-emp"))?.kws).toBeUndefined();
+	});
+});
+
+describe("kwOf spec frontmatter 优先级", () => {
+	it("kws 存在时优先于 capability 回退", () => {
+		expect(kwOf({ entry: "openspec/specs/cap-a/spec.md", desc: "", kws: ["foo", "bar"] })).toEqual([
+			"foo",
+			"bar",
+		]);
+	});
+	it("kws 缺省回退 capability 小写化", () => {
+		expect(kwOf({ entry: "openspec/specs/Cap-B/spec.md", desc: "" })).toEqual(["cap-b"]);
 	});
 });

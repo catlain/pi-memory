@@ -1,8 +1,9 @@
 import type { KnowledgeAsset } from "./asset-catalog";
 
-/** 资产元数据词表：记忆文件名 kw 段 / spec capability 名 */
+/** 资产元数据词表：spec frontmatter keywords 优先 / 记忆文件名 kw 段 / spec capability 名回退 */
 export function kwOf(asset: KnowledgeAsset): string[] {
 	if (asset.entry.startsWith("openspec/")) {
+		if (asset.kws && asset.kws.length) return asset.kws;
 		const cap = asset.entry.split("/")[2] ?? "";
 		return cap ? [cap.toLowerCase()] : [];
 	}
