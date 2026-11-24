@@ -97,6 +97,146 @@
       "reaction": "主题「记忆检索·判定路由·llmjudge」准确命中 prompt 优化任务；shepherd-timing-blindspots 相关采纳 read，check-tool-docs-bugs 弱相关忽略",
       "verdict": "TP",
       "note": "混合精度但主题准：1/2 候选相关——prompt 优化阶段的实时样本（16:31）"
+    },
+    {
+      "id": "R11",
+      "sid": "01a20c5e",
+      "reaction": "主题「pi-context-manager·记忆检索·判定路由」对我（系统建设者）推已熟知的路由系统自身记忆（archaeology/context-persist），均忽略",
+      "verdict": "FP",
+      "note": "元工作重复推：对建设者本人推系统自身记忆——与 R02/R05 同族（元叙述/元工作误命中）"
+    },
+    {
+      "id": "R12",
+      "sid": "01a20c5e",
+      "reaction": "主题「记忆检索·判定路由·llmjudge」准，候选 code_recovery（会话恢复技术）与标注任务边缘无关——需求已由 session_analyze 覆盖，忽略",
+      "verdict": "FP",
+      "note": "主题对资产错型：主题词命中但候选资产非任务所需（泛域资产抢占）"
+    },
+    {
+      "id": "R13",
+      "sid": "01a2065c",
+      "reaction": "1.4.2 验证阶段：主题「npm-update·记忆检索·判定路由」；read context-distill-design + memory-retrieval-archaeology，忽略 godot-mcp-bridge",
+      "verdict": "TP",
+      "note": "2/3 采纳——验证 ephemeral 链路时的相关命中"
+    },
+    {
+      "id": "R14",
+      "sid": "01a2065c",
+      "reaction": "验证收尾阶段：主题「pi-context-manager·记忆检索·判定路由」；候选 mcp_tool_traps/aging-exempt/context-persist 与验证任务无关，全忽略",
+      "verdict": "FP",
+      "note": "read 操作的路径词触发泛域联想（read 记忆文件→推更多记忆）——自引用循环的代价"
+    },
+    {
+      "id": "R15",
+      "sid": "01a2065c",
+      "reaction": "修 settle 竞态阶段：主题「llmjudge串位·toolresult·记忆检索」；read pi_sdk_events（事件权威表）+ matchTargets(ENOENT 索引陈旧)，忽略 index-drift",
+      "verdict": "TP",
+      "note": "高价值命中：SDK 事件表正是修 bug 所需；词库牵引（串位）但无伤"
+    },
+    {
+      "id": "R16",
+      "sid": "01a2065c",
+      "reaction": "查消息模型阶段：主题「pi·hook·events」；read pi-internal-all（Message 模型）——正中根因调查",
+      "verdict": "TP",
+      "note": "精确命中：ToolResultMessage.content=text 块的真相来源"
+    },
+    {
+      "id": "R17",
+      "sid": "01a2065c",
+      "reaction": "修测试 TS 错阶段：主题「vitest·typecheck·mock策略」；read pi_pitfalls + vitest-family（spyOn/doMock 陷阱），忽略 git_workflow/npm-registry",
+      "verdict": "TP",
+      "note": "双命中高价值：正踩坑时推陷阱清单——理想 TP 形态"
+    },
+    {
+      "id": "R18",
+      "sid": "01a2065c",
+      "reaction": "写 dump 测试阶段：主题「mock策略·toolresult·message_end」；read 跨包重复治理（mock 实例隔离）",
+      "verdict": "TP",
+      "note": "渐进追踪：主题词随工作演进（npm→vitest→mock）——判定器跟上了工作流"
+    },
+    {
+      "id": "R19",
+      "sid": "01a2065c",
+      "reaction": "组织数据集阶段：主题「mock策略·typecheck·vitest」（1.5.0 发版后收尾时）——当时任务已转数据标注，无候选命中当前需求",
+      "verdict": "FP",
+      "note": "滞后命中：主题词反映上一阶段工作（发版/测试），与当前标注任务错位——判定窗口的时滞代价"
+    },
+    {
+      "id": "R20",
+      "sid": "01a20b51",
+      "reaction": "wayfinding 收尾：openspec-opsx 提示但会话早期已装载（chart 上膛阶段经 prompt 注入），jud判无新信息；distill 设计/MCP processor 与 apply 时序无涉",
+      "verdict": "FP",
+      "note": "readTracker 盲区：非 read 通道的知识装载（prompt 注入/技能加载）不追踪——已知内容仍推（FP 模式⑤）"
+    },
+    {
+      "id": "R21",
+      "sid": "01a20b51-R3盲推子代理",
+      "reaction": "子代理（只读工具面）收 16+ 次注入逐一判断：openspec-opsx 读之（任务直接相关）",
+      "verdict": "TP",
+      "note": "子代理侧验证：注入对只读侦察型子代理同样可达且可采纳（11-24 15:06，1.4.x 前时代）"
+    },
+    {
+      "id": "R22",
+      "sid": "01a20b51-R3盲推子代理",
+      "reaction": "pi-skill-globalization（三载体同步）、prompt-template-no-angle-brackets（brief 模板）、subagent-mechanism（A6 实测）三资产相关，读",
+      "verdict": "TP",
+      "note": "一批三中：openspec 收尾设计任务的知识需求面"
+    },
+    {
+      "id": "R23",
+      "sid": "01a20b51-R3盲推子代理",
+      "reaction": "subagent-spawn-runtime/spec.md（OutputConstraint 正式契约）与 subagent-timeout-config 相关，读；mdbook/sendUserMessage/roadmap-planpath/pi-intercom-hoist 四条无关忽略",
+      "verdict": "TP+FP",
+      "note": "同批 2 中 4 错——spec 资产命中价值高但泛域记忆污染同批"
+    },
+    {
+      "id": "R24",
+      "sid": "01a20b51-R3盲推子代理",
+      "reaction": "D13 聚合条款相关的 ask-user-cr-pollution 系记忆相关，读；fork-dual-module-instance/pi_sdk_events 判断无涉忽略",
+      "verdict": "TP",
+      "note": "设计判据型命中：正在设计 D13 时推相关实证记忆"
+    },
+    {
+      "id": "R25",
+      "sid": "01a20b51-R3盲推子代理",
+      "reaction": "mdbook 资产五次判无关仍反复推（叙述原话：'mdbook 记忆已五次判无关'）",
+      "verdict": "FP",
+      "note": "重复轰炸铁证（1.4.0 前无已提示集合时代）——同资产推≥5 次；已提示集合修复的直接动机"
+    },
+    {
+      "id": "R26",
+      "sid": "01a20b51-R3盲推子代理",
+      "reaction": "aging-exempt-semantics 六次判无关仍推（叙述原话：'已三次无关'→'已五次无关'→'已六次无关'）",
+      "verdict": "FP",
+      "note": "最严重重复轰炸样本：同一资产单会话内推≥6 次；AI 被迫每次叙述'再次无关'——这些叙述又入池引发新判定（自引用循环实证）"
+    },
+    {
+      "id": "R27",
+      "sid": "01a20b51-R3盲推子代理",
+      "reaction": "roadmap-planpath 多次推均忽略；atelier-book-philosophy 两次无关仍推",
+      "verdict": "FP",
+      "note": "泛域文档类资产（roadmap/mdbook/书本哲学）在 opsx 收尾任务中的系统性误命中——'任务涉及文档工作→推文档记忆'的域联想错误"
+    },
+    {
+      "id": "R28",
+      "sid": "01a20b51-R3盲推子代理",
+      "reaction": "code_recovery、roadmap-eid 无关忽略；arch-guard、godot-bridge 与 opsx 收尾无关忽略",
+      "verdict": "FP",
+      "note": "跨域资产噪声：代码恢复/git 历史域与纯设计推演任务的错配"
+    },
+    {
+      "id": "R29",
+      "sid": "01a20b51-R3盲推子代理",
+      "reaction": "codegraph-all、duckdb-large-table-ops、shepherd-rule-writing 三条无关忽略；mcp_tool_traps/context-distill-design 与纯设计推演无关忽略",
+      "verdict": "FP",
+      "note": "子代理侦察叙述中的技术词（find/grep/schema）触发基础设施类记忆联想——工具操作叙述的词汇面误命中"
+    },
+    {
+      "id": "R30",
+      "sid": "01a20b51-R3盲推子代理",
+      "reaction": "子代理同一工作周期内收约 16 次注入：采纳资产 6-7 个（TP），无关/重复推 9-10 个（FP）——FP 率约 60%",
+      "verdict": "汇总",
+      "note": "子代理周期定量基线（1.4.0 前时代）：修复前 FP 率高+重复轰炸严重；当前 1.5.0 已提示集合+readTracker 双闸后待重测同样本型"
     }
   ],
   "judge_entries_sample": [
