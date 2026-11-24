@@ -12,13 +12,15 @@ export function registerRouting(pi: ExtensionAPI): void {
 	pi.on("message_end", async (event: unknown, ctx: unknown) => {
 		if (ctx) router.setJudgeContext(ctx);
 		router.accumulate(event as { message?: { content?: unknown } });
-		// 同步判定（对齐 shepherd 归因猜测模式）：settle 前完成，命中时 settle-continue 驱动下一轮
-		await router.maybeTrigger(pi);
+		// 同步判定（对齐 shepherd 归因猜测模式）：settle 前完成；含 toolCall = 工具循环中间，注入由下一次循环请求自然 drain，不走 settle 链路
+		const blocks = (event as { message?: { content?: Array<{ type: string }> } })?.message?.content ?? [];
+		const endOfTurn = !blocks.some((b) => b.type === "toolCall");
+		await router.maybeTrigger(pi, { endOfTurn });
 	});
 
-	// settle-continue（ADR-025 组合拳）：有待注入提醒时 continue，pi 驱动下一 provider request（drain 注入）
+	// settle-continue（ADR-025 组合拳）：消费时补发空消息保队列有货（防非法 continue）
 	pi.on("agent_before_settle", async (_event: unknown, _ctx: unknown) => {
-		if (router.consumePendingHint()) return { continue: true };
+		if (router.consumePendingHint(pi)) return { continue: true };
 		return {};
 	});
 

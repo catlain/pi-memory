@@ -120,13 +120,16 @@ export class MemoryRouter {
 		return this.judgeInstance;
 	}
 
-	/** agent_before_settle：有待注入提醒时返回 true（调用即消费，单次 continue 驱动下一请求） */
-	consumePendingHint(): boolean {
-		if (this.pendingHintCount > 0) {
-			this.pendingHintCount = 0;
+	/** agent_before_settle：消费待注入提醒——补发空消息保队列有货，continue 才合法（防 "requested continuation without runnable model context"） */
+	consumePendingHint(pi: ExtensionAPI): boolean {
+		if (this.pendingHintCount <= 0) return false;
+		this.pendingHintCount = 0;
+		try {
+			pi.sendMessage({ customType: "memory-routing-hint", display: false, content: "" }, { triggerTurn: false });
 			return true;
+		} catch {
+			return false; // 补发失败不 continue（fail-open）
 		}
-		return false;
 	}
 
 	/** 可观测：已读计数 + 已提示集合数 */
@@ -134,7 +137,7 @@ export class MemoryRouter {
 		return { readPaths: this.readTracker.snapshot().length, prompted: this.prompted.size };
 	}
 
-	async maybeTrigger(pi: ExtensionAPI): Promise<void> {
+	async maybeTrigger(pi: ExtensionAPI, opts?: { endOfTurn?: boolean }): Promise<void> {
 		// 配置热读：跨会话立即感知 off/N 变更（写入层为全局 settings）
 		this.config = loadConfig(this.cwd);
 		if (!this.config.enabled) {
@@ -175,14 +178,11 @@ export class MemoryRouter {
 
 			for (const a of candidates) this.prompted.add(a.entry);
 
+			// 工具信号计入叙述通道，批量判定后清理当前池
 			pi.events.emit("ephemeral:hint", buildHintText(candidates, keywords, this.cwd));
-			// settle-continue（对齐 shepherd ADR-025）：空 sendMessage 驱动 pendingCustomContext，settle 读计数 continue → 下一 request drain 注入
-			this.pendingHintCount = 1;
-			try {
-				pi.sendMessage({ customType: "memory-routing-hint", display: false, content: "" }, { triggerTurn: false });
-			} catch {
-				/* 驱动失败时计数保留——下轮 settle 仍可消费 */
-			}
+			// 回合末才走 settle-continue（工具循环中间的注入由本回合下一次请求自然 drain）；
+			// 空 sendMessage 仅作 continue 队列燃料，settle 消费时补发（防空消息被中途 flush 后非法 continue）
+			if (opts?.endOfTurn !== false) this.pendingHintCount = 1;
 		} catch {
 			/* fail-open */
 		}

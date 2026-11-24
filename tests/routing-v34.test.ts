@@ -35,7 +35,7 @@ vi.mock("../lib/asset-catalog", () => ({
 import { MemoryRouter } from "../lib/routing";
 
 function piStub() {
-	return { events: { emit: emitMock } } as any;
+	return { events: { emit: emitMock }, sendMessage: vi.fn() } as any;
 }
 
 const longText = "x".repeat(60);
@@ -84,8 +84,29 @@ describe("v3.4：enabled 三处检查 + 已提示集合 + settle-continue", () =
 		router.accumulate(assistantMsg(longText));
 		await router.maybeTrigger(piStub());
 		expect(emitMock).toHaveBeenCalledTimes(1);
-		expect(router.consumePendingHint()).toBe(true); // settle 读到 → continue
-		expect(router.consumePendingHint()).toBe(false); // 单次消费 → 收敛
+		expect(router.consumePendingHint(piStub())).toBe(true); // settle 读到 → 补发空消息 → continue
+		expect(router.consumePendingHint(piStub())).toBe(false); // 单次消费 → 收敛
+	});
+
+	it("回归：工具循环中间（endOfTurn=false）不置计数——防空消息被 flush 后非法 continue", async () => {
+		router.accumulate(assistantMsg(longText));
+		judgeMock.mockResolvedValue(["git"]);
+		settingsStore.enabled = true;
+		await router.maybeTrigger(piStub(), { endOfTurn: false }); // 工具循环中间的 message_end
+		expect(emitMock).toHaveBeenCalledTimes(1); // hint 照常 emit（由下一次循环请求自然 drain）
+		expect(router.consumePendingHint(piStub())).toBe(false); // 但不走 settle 链路 → 永不非法 continue
+	});
+
+	it("回归：settle 消费时补发 sendMessage（队列燃料）", async () => {
+		router.accumulate(assistantMsg(longText));
+		judgeMock.mockResolvedValue(["git"]);
+		settingsStore.enabled = true;
+		const pi = piStub();
+		await router.maybeTrigger(pi, { endOfTurn: true }); // 回合末
+		expect(pi.sendMessage).not.toHaveBeenCalled(); // emit 时不再发（防被中途 flush）
+		const ok = router.consumePendingHint(pi);
+		expect(ok).toBe(true);
+		expect(pi.sendMessage).toHaveBeenCalledTimes(1); // settle 时补发——队列有货，continue 合法
 	});
 
 	it("toolResult 消息的 text 块不入池（read 全文污染源修复）", () => {
