@@ -39,3 +39,25 @@ export function matchAssets(keywords: string[], assets: KnowledgeAsset[]): Knowl
 	}
 	return hits;
 }
+
+/** v3.4 注入文本四要素：判定依据（主题词）+ 完整路径（L1/L2 前缀消歧）+ desc + 行动指引 */
+export function buildHintText(
+	candidates: KnowledgeAsset[],
+	keywords: string[],
+	cwd: string,
+): { text: string; short: string } {
+	const lines = candidates
+		.map((a) => {
+			const full = a.entry.startsWith("memory/") ? `~/.pi/agent/${a.entry}` : `${cwd}/${a.entry}`;
+			return `- ${full}（${a.desc.slice(0, 60) || "关键词见文件名"}）`;
+		})
+		.join("\n");
+	const stems = candidates.map((a) => (a.entry.split("/").pop() ?? "").split("--")[0]).join("、");
+	const theme = keywords.slice(0, 3).join("·");
+	return {
+		text:
+			`💡 记忆路由：从你近期的工作记录（叙述/工具操作/报错）中识别出主题「${theme}」，` +
+			`以下未读知识资产与之匹配（本会话内不会重复提示）：\n${lines}\n若与当前任务相关请 read；无关则忽略即可。`,
+		short: `💡 记忆路由（${theme}）：${stems}`,
+	};
+}

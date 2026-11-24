@@ -1,22 +1,12 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { getEffectiveConfig, patchSettingsSection } from "@pi-atelier/shared-utils";
 import { createJudge, type JudgeInstance } from "@pi-atelier/shared-utils/judge";
 import { collectMemoryAssets, collectSpecAssets, type KnowledgeAsset } from "./asset-catalog";
+import { buildHintText, buildVocabulary, matchAssets, parseKeywords } from "./keyword-routing";
+import { PromptedSet } from "./prompted-set";
+import { loadConfig, type RoutingConfig } from "./routing-config";
 import { createReadTracker } from "./read-tracker";
-import { buildVocabulary, matchAssets, parseKeywords } from "./keyword-routing";
 
-/** 记忆路由配置（settings memoryRouting 段；judgeModel 缺省走共享三层链） */
-export interface RoutingConfig {
-	enabled: boolean;
-	/** 判定触发字符阈值：叙述/工具摘要/报错共用字符池，满则判（tumbling window） */
-	batchChars: number;
-	/** openspec specs 目录的 capability 进判定资产池 */
-	includeSpecs: boolean;
-	/** 显式判定模型（缺省 = judgeModel 顶层/legacy/会话默认三层链） */
-	judgeModel: string;
-}
-
-const DEFAULTS: RoutingConfig = { enabled: true, batchChars: 1200, includeSpecs: true, judgeModel: "" };
+export { loadConfig, setRoutingConfig, DEFAULTS } from "./routing-config";
 
 /** 单信号行截断 */
 const LINE_CAP = 2000;
@@ -26,15 +16,6 @@ const SYSTEM_PROMPT =
 	"你的任务：【只能从词库中选出】与工作记录最相关的主题关键词，每行一个，最多 5 个。" +
 	"禁止自创词库外的词；词库内确实无合适项时只输出：无。" +
 	"只输出词本身，不要解释、不要编号、不要标点符号前后缀。";
-
-export function loadConfig(cwd: string): RoutingConfig {
-	const r = getEffectiveConfig("memoryRouting", { ...DEFAULTS }, cwd) as { config?: Partial<RoutingConfig> };
-	return { ...DEFAULTS, ...(r.config ?? {}) };
-}
-
-export function setRoutingConfig(patch: Partial<RoutingConfig>): RoutingConfig {
-	return patchSettingsSection<RoutingConfig>("memoryRouting", patch, DEFAULTS);
-}
 
 /** 工具调用参数摘要：bash 取 command，read/edit 取 path，其余 JSON 截断 */
 function summarizeToolCall(toolName: string, args: unknown): string {
@@ -54,10 +35,7 @@ function summarizeError(result: unknown): string {
 	return String(s).slice(0, 200);
 }
 
-/**
- * 记忆路由核心：字符池（三信号源）→ 计满批量判定（词表路由）→ 倒排匹配 →
- * 未读过滤 → shepherd ephemeral:hint（不进 session 历史，无勿荐降权）。
- */
+/** 记忆路由核心：字符池（三信号源）→ 计满同步判定（词表路由）→ 倒排匹配 → 未读过滤 → ephemeral:hint + settle-continue */
 export class MemoryRouter {
 	config: RoutingConfig;
 	private buffer: string[] = [];
@@ -65,6 +43,9 @@ export class MemoryRouter {
 	private judgedBatches = new Set<string>();
 	private judgeInstance: JudgeInstance<string[]> | null = null;
 	private pendingCtx: unknown = null;
+	private prompted = new PromptedSet();
+	/** 待注入计数：agent_before_settle 读到即消费（单次 continue），驱动下一 provider request */
+	private pendingHintCount = 0;
 
 	/** message_end 事件的 ExtensionContext —— judge 调 LLM 的必要通道，首个事件到达时注入 */
 	setJudgeContext(ctx: unknown): void {
@@ -83,6 +64,7 @@ export class MemoryRouter {
 
 	/** message_end：叙述（text 块）+ 工具摘要（toolCall 块）入池 */
 	accumulate(event: unknown): void {
+		if (!this.config.enabled) return; // 快照级；跨会话 off 感知靠 maybeTrigger 热读
 		try {
 			const msg = (event as { message?: { content?: unknown } }).message;
 			const blocks = Array.isArray(msg?.content) ? (msg.content as Array<Record<string, unknown>>) : [];
@@ -136,7 +118,28 @@ export class MemoryRouter {
 		return this.judgeInstance;
 	}
 
+	/** agent_before_settle：有待注入提醒时返回 true（调用即消费，单次 continue 驱动下一请求） */
+	consumePendingHint(): boolean {
+		if (this.pendingHintCount > 0) {
+			this.pendingHintCount = 0;
+			return true;
+		}
+		return false;
+	}
+
+	/** 可观测：已读计数 + 已提示集合数 */
+	diagnostics(): { readPaths: number; prompted: number } {
+		return { readPaths: this.readTracker.snapshot().length, prompted: this.prompted.size };
+	}
+
 	async maybeTrigger(pi: ExtensionAPI): Promise<void> {
+		// 配置热读：跨会话立即感知 off/N 变更（写入层为全局 settings）
+		this.config = loadConfig(this.cwd);
+		if (!this.config.enabled) {
+			this.buffer = [];
+			this.charCount = 0;
+			return;
+		}
 		const batch = this.takeBatch();
 		if (!batch) return;
 		const narrative = batch.lines.join("\n");
@@ -162,22 +165,22 @@ export class MemoryRouter {
 			if (!keywords || keywords.length === 0) return;
 
 			const hits = matchAssets(keywords, assets);
-			const candidates = hits.filter((a) => !this.readTracker.hasRead(a.entry)).slice(0, 3);
+			const candidates = hits
+				.filter((a) => !this.readTracker.hasRead(a.entry) && !this.prompted.has(a.entry))
+				.slice(0, 3);
 			if (candidates.length === 0) return;
+			if (!this.config.enabled) return; // emit 前飞行拦截（off 后判定返回时拦截）
 
-			const lines = candidates.map((a) => {
-				const full = a.entry.startsWith("memory/")
-					? `~/.pi/agent/${a.entry}`
-					: a.entry.startsWith(".pi/memory/")
-						? `${this.cwd}/${a.entry}`
-						: `${this.cwd}/${a.entry}`;
-				return `- ${full}（${a.desc.slice(0, 60) || "关键词见文件名"}）`;
-			}).join("\n");
-			const stems = candidates.map((a) => (a.entry.split("/").pop() ?? "").split("--")[0]).join("、");
-			pi.events.emit("ephemeral:hint", {
-				text: `💡 记忆路由：本段工作与以下知识资产相关（你尚未读过）：\n${lines}\n如相关请 read；无关可忽略。`,
-				short: `💡 记忆路由：${stems}`,
-			});
+			for (const a of candidates) this.prompted.add(a.entry);
+
+			pi.events.emit("ephemeral:hint", buildHintText(candidates, keywords, this.cwd));
+			// settle-continue（对齐 shepherd ADR-025）：空 sendMessage 驱动 pendingCustomContext，settle 读计数 continue → 下一 request drain 注入
+			this.pendingHintCount = 1;
+			try {
+				pi.sendMessage({ customType: "memory-routing-hint", display: false, content: "" }, { triggerTurn: false });
+			} catch {
+				/* 驱动失败时计数保留——下轮 settle 仍可消费 */
+			}
 		} catch {
 			/* fail-open */
 		}

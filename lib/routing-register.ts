@@ -12,7 +12,14 @@ export function registerRouting(pi: ExtensionAPI): void {
 	pi.on("message_end", async (event: unknown, ctx: unknown) => {
 		if (ctx) router.setJudgeContext(ctx);
 		router.accumulate(event as { message?: { content?: unknown } });
-		void router.maybeTrigger(pi);
+		// 同步判定（对齐 shepherd 归因猜测模式）：settle 前完成，命中时 settle-continue 驱动下一轮
+		await router.maybeTrigger(pi);
+	});
+
+	// settle-continue（ADR-025 组合拳）：有待注入提醒时 continue，pi 驱动下一 provider request（drain 注入）
+	pi.on("agent_before_settle", async (_event: unknown, _ctx: unknown) => {
+		if (router.consumePendingHint()) return { continue: true };
+		return {};
 	});
 
 	pi.on("tool_execution_start", (event: unknown) => {
@@ -34,8 +41,13 @@ export function registerRouting(pi: ExtensionAPI): void {
 			const notify = (text: string) => (ctx as { ui?: { notify?: (t: string, l?: string) => void } }).ui?.notify?.(text, "info");
 			const sub = rawArgs.trim();
 			if (sub === "" || sub === "status") {
-				const c = router.config;
-				notify(`memoryRouting: enabled=${c.enabled} batchChars=${c.batchChars} includeSpecs=${c.includeSpecs}\n用法: /memory-routing [N|on|off]（N=字符阈值）`);
+				const c = loadConfig(process.cwd()); // 热读：显示全局层最新值（跨会话一致）
+				router.setConfig(c);
+				const d = router.diagnostics();
+				notify(
+					`memoryRouting: enabled=${c.enabled} batchChars=${c.batchChars} includeSpecs=${c.includeSpecs} ` +
+						`已读=${d.readPaths} 已提示=${d.prompted}\n用法: /memory-routing [N|on|off]（N=字符阈值）`,
+				);
 				return;
 			}
 			if (sub === "on" || sub === "off") {

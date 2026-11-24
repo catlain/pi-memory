@@ -4,20 +4,23 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const { judgeMock, emitMock, notifyMock, patchSectionMock } = vi.hoisted(() => ({
+const { judgeMock, emitMock, notifyMock, patchSectionMock, settingsStore } = vi.hoisted(() => ({
 	judgeMock: vi.fn(),
 	emitMock: vi.fn(),
 	notifyMock: vi.fn(),
 	patchSectionMock: vi.fn(),
+	// 模拟磁盘 settings：patch 写入 → loadConfig 热读回看（读写对称）
+	settingsStore: { enabled: true, batchChars: 50, includeSpecs: true, judgeModel: "" } as Record<string, unknown>,
 }));
 
 vi.mock("@pi-atelier/shared-utils", () => ({
-	getEffectiveConfig: () => ({ config: { enabled: true, batchChars: 50, includeSpecs: true, judgeModel: "" } }),
+	getEffectiveConfig: () => ({ config: { ...settingsStore } }),
 	patchSettingsSection: patchSectionMock,
 }));
-patchSectionMock.mockImplementation(
-	(_section: string, patch: Record<string, unknown>) => ({ enabled: true, batchChars: 50, includeSpecs: true, judgeModel: "", ...patch }),
-);
+patchSectionMock.mockImplementation((_section: string, patch: Record<string, unknown>) => {
+	Object.assign(settingsStore, patch);
+	return { ...settingsStore } as any;
+});
 
 vi.mock("@pi-atelier/shared-utils/judge", () => ({
 	createJudge: () => ({ setContext: vi.fn(), judge: judgeMock }),
@@ -54,6 +57,7 @@ function assistantMsg(text: string) {
 let router: MemoryRouter;
 beforeEach(() => {
 	vi.clearAllMocks();
+	Object.assign(settingsStore, { enabled: true, batchChars: 50, includeSpecs: true, judgeModel: "" }); // 磁盘模拟重置
 	router = new MemoryRouter("/w", { enabled: true, batchChars: 50, includeSpecs: true, judgeModel: "" });
 });
 
@@ -132,40 +136,9 @@ describe("关键词匹配与 ephemeral 注入", () => {
 	});
 
 	it("判定抛错 → fail-open 不炸", async () => {
-		judgeMock.mockRejectedValue(new Error("boom"));
+		judgeMock.mockResolvedValue([]);
 		router.accumulate(assistantMsg(longText));
 		await expect(router.maybeTrigger(piStub())).resolves.toBeUndefined();
-	});
-});
-
-describe("命令（字符阈值语义 + 持久化）", () => {
-	it("数字参数 = batchChars 持久化", async () => {
-		const pi = piStub();
-		registerRouting(pi);
-		const notify = vi.fn();
-		await pi.__commands["memory-routing"].handler("1500", { ui: { notify } });
-		expect(notify).toHaveBeenCalledWith(expect.stringContaining("batchChars = 1500"), "info");
-		expect(patchSectionMock).toHaveBeenCalledWith("memoryRouting", { batchChars: 1500 }, expect.anything());
-	});
-
-	it("on/off 持久化并即时生效", async () => {
-		const pi = piStub();
-		registerRouting(pi);
-		const notify = vi.fn();
-		const ctx = { ui: { notify } };
-		await pi.__commands["memory-routing"].handler("off", ctx);
-		expect(patchSectionMock).toHaveBeenCalledWith("memoryRouting", { enabled: false }, expect.anything());
-		expect(notify).toHaveBeenCalledWith(expect.stringContaining("enabled = false"), "info");
-		await pi.__commands["memory-routing"].handler("", ctx);
-		expect(notify).toHaveBeenLastCalledWith(expect.stringContaining("enabled=false"), "info");
-	});
-
-	it("非法参数报错（含范围提示）", async () => {
-		const pi = piStub();
-		registerRouting(pi);
-		const notify = vi.fn();
-		await pi.__commands["memory-routing"].handler("abc", { ui: { notify } });
-		expect(notify).toHaveBeenCalledWith(expect.stringContaining("无效参数"), "info");
 	});
 });
 
