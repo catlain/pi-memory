@@ -1,8 +1,8 @@
 {
- "pass": 19,
- "total": 30,
+ "pass": 17,
+ "total": 27,
  "promptUsed": "你是主题路由标注器。你会收到一个主题词库和一段 AI 工作记录（含 [叙述]/[tool]/[tool✗] 三类标签行，报错信号已在行内）。你的任务：【只能从词库中选出】与工作记录【核心工作对象】最相",
- "promptFull": "你是主题路由标注器。你会收到一个主题词库和一段 AI 工作记录（含 [叙述]/[tool]/[tool✗] 三类标签行，报错信号已在行内）。你的任务：【只能从词库中选出】与工作记录【核心工作对象】最相关的主题关键词，每行一个，最多 5 个。禁止自创词库外的词；【必须与词库逐字完全一致，禁止近似词、拆分或拼接】；词库内确实无合适项时只输出：无。只输出词本身，不要解释、不要编号。\n\n判定步骤（按序）：先从记录中确定核心工作对象（被实际调用、创建、修改、调试或报错的具体工具/模块/机制），再拿该对象去词库找逐字词条；严禁先浏览词库再从记录找理由。\n\n纪律（共四条，按优先级）：\n1. 凡核心对象在词库有逐字词条，必须输出——这条优先于其他一切纪律，不得因保守弃选。[tool]/[tool✗] 行中实际被调用或报错的工具与模块默认视为核心对象。\n2. 区分核心与提及：去掉该词所在句子后记录的主要工作不变，即为提及，不选。\n3. 元叙述排除：记录若是在讨论本路由/词库/评测/会话检索机制本身，相关词条（判定类、记忆检索类、上下文管理类）不选，除非确实在改这些模块的代码。\n4. 通常只选 1-2 个词：除核心对象外，顺带报错或背景提及的词一律不补选；宁少勿滥，找不到逐字词条就输出：无。\n",
+ "promptFull": "你是主题路由标注器。你会收到一个主题词库和一段 AI 工作记录（含 [叙述]/[tool]/[tool✗] 三类标签行，报错信号已在行内）。你的任务：【只能从词库中选出】与工作记录【核心工作对象】最相关的主题关键词，每行一个，最多 5 个。禁止自创词库外的词；【必须与词库逐字完全一致，禁止近似词、拆分或拼接】；词库内确实无合适项时只输出：无。只输出词本身，不要解释、不要编号。\n\n判定步骤（按序）：先从记录中确定核心工作对象（被实际调用、创建、修改、调试或报错的具体工具/模块/机制），再拿该对象去词库找逐字词条；严禁先浏览词库再从记录找理由。【输出前自检：每个候选词必须能在词库中找到逐字相同的整条词条，且能指向记录中被实际操作的具体行；两点任一不满足即删除该词。】\n\n纪律（按优先级从高到低）：\n0.【逐字匹配优先于一切：只允许输出词库中的完整词条。若核心对象对应词库中的组合词条（如带连字符/点号的整体词），必须整词输出，严禁拆成多个短词、拼接或改写为记录中的变体写法。】\n1. 凡核心对象在词库有逐字词条，必须输出——这条优先于其他一切纪律，不得因保守弃选，【也不受第 4 条\"宁少\"约束】。[tool]/[tool✗] 行中实际被调用或报错的工具与模块默认视为核心对象，【只要词库有对应词条就必须选中，漏选即为错误】。\n2. 区分核心与提及：去掉该词所在句子后记录的主要工作不变，即为提及，不选。【凡无法指出该词对应的被操作行的，一律视为提及。】\n3. 元叙述排除：记录若是在讨论本路由/词库/评测/会话检索机制本身，相关词条（判定类、记忆检索类、上下文管理类）不选，除非确实在改这些模块的代码。【注意：调试、调用、修复某个工具或机制（即使该工具与评测/记忆相关）属于实际工作，不算元叙述，该工具若有词条必须输出。】\n4.【在满足第 1 条的前提下】通常只选 1-2 个词：除核心对象外，顺带报错或背景提及的词一律不补选；【\"宁少\"只用于排除提及词，不用于排除核心对象】；找不到逐字词条就输出：无。\n",
  "details": [
   {
    "id": "R01",
@@ -36,14 +36,13 @@
   {
    "id": "R04",
    "verdict": "TP+FP",
-   "expected": [],
-   "answer": [
-    "openspec",
+   "expected": [
     "opsx"
    ],
-   "raw": "openspec\nopsx",
+   "answer": [],
+   "raw": "无",
    "ok": false,
-   "note": "混合批：1 命中 2 误——已提示集合抑制后混合批仍出现"
+   "note": "混合批：openspec-opsx 相关侧读之（input 明示）——期望=识别相关侧；arch-guard/godot 无关侧不选。原 expected=[] 为 stem 词形错标（2026-11-24 修正）｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R05",
@@ -67,15 +66,15 @@
    "id": "R07",
    "verdict": "TP",
    "expected": [
-    "pi-internal-all"
+    "compaction"
    ],
    "answer": [
-    "compaction",
-    "models.json"
+    "pi-intercom",
+    "compaction"
    ],
-   "raw": "compaction\nmodels.json",
-   "ok": false,
-   "note": "本会话：消息模型调查采纳"
+   "raw": "pi-intercom\ncompaction",
+   "ok": true,
+   "note": "本会话：消息模型调查采纳；pi-internal-all 是 stem 不在词库，input 首句明示 compaction 内核（2026-11-24 修正）｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R08",
@@ -93,11 +92,12 @@
     "vitest"
    ],
    "answer": [
-    "vitest"
+    "vitest",
+    "mock策略"
    ],
-   "raw": "vitest",
+   "raw": "vitest\nmock策略",
    "ok": true,
-   "note": "本会话：vitest 陷阱场景精确命中"
+   "note": "本会话：vitest 陷阱场景精确命中｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R10",
@@ -108,7 +108,7 @@
    "answer": [],
    "raw": "无",
    "ok": false,
-   "note": "混合精度但主题准：1/2 候选相关——prompt 优化阶段的实时样本（16:31）"
+   "note": "混合精度但主题准：1/2 候选相关——prompt 优化阶段的实时样本（16:31）｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R11",
@@ -135,13 +135,12 @@
     "npm-update"
    ],
    "answer": [
-    "判定路由",
-    "记忆检索",
-    "npm-update"
+    "npm-update",
+    "shared-utils"
    ],
-   "raw": "判定路由\n记忆检索\nnpm-update",
+   "raw": "npm-update\nshared-utils",
    "ok": true,
-   "note": "2/3 采纳——验证 ephemeral 链路时的相关命中"
+   "note": "2/3 采纳——验证 ephemeral 链路时的相关命中｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R14",
@@ -158,10 +157,14 @@
    "expected": [
     "toolresult"
    ],
-   "answer": [],
-   "raw": "无",
+   "answer": [
+    "pi",
+    "hook",
+    "message"
+   ],
+   "raw": "pi\nhook\nmessage",
    "ok": false,
-   "note": "高价值命中：SDK 事件表正是修 bug 所需；词库牵引（串位）但无伤"
+   "note": "高价值命中：SDK 事件表正是修 bug 所需；词库牵引（串位）但无伤｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R16",
@@ -170,14 +173,13 @@
     "hook"
    ],
    "answer": [
-    "pi",
-    "hook",
-    "events",
-    "message"
+    "llmjudge串位",
+    "toolresult",
+    "getmatchtargets"
    ],
-   "raw": "pi\nhook\nevents\nmessage",
-   "ok": true,
-   "note": "精确命中：ToolResultMessage.content=text 块的真相来源"
+   "raw": "llmjudge串位\ntoolresult\ngetmatchtargets",
+   "ok": false,
+   "note": "精确命中：ToolResultMessage.content=text 块的真相来源｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R17",
@@ -193,7 +195,7 @@
    ],
    "raw": "vitest\ntypecheck\nmock策略",
    "ok": true,
-   "note": "双命中高价值：正踩坑时推陷阱清单——理想 TP 形态"
+   "note": "双命中高价值：正踩坑时推陷阱清单——理想 TP 形态｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R18",
@@ -201,14 +203,10 @@
    "expected": [
     "mock策略"
    ],
-   "answer": [
-    "mock策略",
-    "toolresult",
-    "message_end"
-   ],
-   "raw": "mock策略\ntoolresult\nmessage_end",
-   "ok": true,
-   "note": "渐进追踪：主题词随工作演进（npm→vitest→mock）——判定器跟上了工作流"
+   "answer": [],
+   "raw": "无",
+   "ok": false,
+   "note": "渐进追踪：主题词随工作演进（npm→vitest→mock）——判定器跟上了工作流｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R19",
@@ -224,10 +222,10 @@
    "verdict": "FP",
    "expected": [],
    "answer": [
-    "distill",
-    "processor"
+    "openspec",
+    "opsx"
    ],
-   "raw": "distill\nprocessor",
+   "raw": "openspec\nopsx",
    "ok": false,
    "note": "readTracker 盲区：非 read 通道的知识装载（prompt 注入/技能加载）不追踪——已知内容仍推（FP 模式⑤）"
   },
@@ -235,16 +233,15 @@
    "id": "R21",
    "verdict": "TP",
    "expected": [
-    "openspec-opsx"
+    "opsx"
    ],
    "answer": [
     "openspec",
-    "opsx",
-    "子代理"
+    "opsx"
    ],
-   "raw": "openspec\nopsx\n子代理",
+   "raw": "openspec\nopsx",
    "ok": true,
-   "note": "子代理侧验证：注入对只读侦察型子代理同样可达且可采纳（11-24 15:06，1.4.x 前时代）"
+   "note": "子代理侧验证：注入对只读侦察型子代理可达可采纳；stem→kw 词形修正（2026-11-24）｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R22",
@@ -252,13 +249,10 @@
    "expected": [
     "skill"
    ],
-   "answer": [
-    "expandprompttemplates",
-    "模板"
-   ],
-   "raw": "expandprompttemplates\n模板",
+   "answer": [],
+   "raw": "无",
    "ok": false,
-   "note": "一批三中：openspec 收尾设计任务的知识需求面"
+   "note": "一批三中：openspec 收尾设计任务的知识需求面｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R23",
@@ -281,39 +275,7 @@
    "answer": [],
    "raw": "无",
    "ok": false,
-   "note": "设计判据型命中：正在设计 D13 时推相关实证记忆"
-  },
-  {
-   "id": "R25",
-   "verdict": "FP",
-   "expected": [],
-   "answer": [
-    "mdbook"
-   ],
-   "raw": "mdbook",
-   "ok": false,
-   "note": "重复轰炸铁证（1.4.0 前无已提示集合时代）——同资产推≥5 次；已提示集合修复的直接动机"
-  },
-  {
-   "id": "R26",
-   "verdict": "FP",
-   "expected": [],
-   "answer": [],
-   "raw": "无",
-   "ok": true,
-   "note": "最严重重复轰炸样本：同一资产单会话内推≥6 次；AI 被迫每次叙述'再次无关'——这些叙述又入池引发新判定（自引用循环实证）"
-  },
-  {
-   "id": "R27",
-   "verdict": "FP",
-   "expected": [],
-   "answer": [
-    "roadmap",
-    "planpath"
-   ],
-   "raw": "roadmap\nplanpath",
-   "ok": false,
-   "note": "泛域文档类资产（roadmap/mdbook/书本哲学）在 opsx 收尾任务中的系统性误命中——'任务涉及文档工作→推文档记忆'的域联想错误"
+   "note": "设计判据型命中：正在设计 D13 时推相关实证记忆｜形态修复：剥离反应注记（探针实证 01a2065c）"
   },
   {
    "id": "R28",

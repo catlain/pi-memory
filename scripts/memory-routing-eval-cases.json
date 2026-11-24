@@ -1,241 +1,243 @@
 {
- "generated": "2026-11-24",
- "source": "R01-R32 verdicts",
- "cases": [
-  {
-   "id": "R01",
-   "verdict": "TP",
-   "input": "[叙述] mona-extension-kernel-build（wasm-bindgen 相关）——这是项目记忆",
-   "expected": [
-    "openspec-opsx"
-   ],
-   "note": "半采纳：确认相关性"
-  },
-  {
-   "id": "R02",
-   "verdict": "FP",
-   "input": "[叙述] 记忆路由那条与本诊断无关，忽略",
-   "expected": [],
-   "note": "诊断会话的元叙述被误命中"
-  },
-  {
-   "id": "R03",
-   "verdict": "FP",
-   "input": "[叙述] 两个新文件与本手术无关（Godot bridge/工具输出格式化），忽略",
-   "expected": [],
-   "note": "quant 手术会话，跨域词误命中"
-  },
-  {
-   "id": "R04",
-   "verdict": "TP+FP",
-   "input": "[叙述] openspec-opsx 与本任务直接相关，读之；另两个（arch-guard、godot-bridge）与任务无关",
-   "expected": [],
-   "note": "混合批：1 命中 2 误——已提示集合抑制后混合批仍出现"
-  },
-  {
-   "id": "R05",
-   "verdict": "FP",
-   "input": "[叙述] 三份资产与本审计任务（fold 六条件凭证核查）无关，忽略",
-   "expected": [],
-   "note": "审计元叙述"
-  },
-  {
-   "id": "R06",
-   "verdict": "TP",
-   "input": "[叙述] subagent-mechanism 和 memory-retrieval-archaeology（下略）",
-   "expected": [],
-   "note": "wayfinding 会话引用"
-  },
-  {
-   "id": "R07",
-   "verdict": "TP",
-   "input": "[叙述] pi-internal-all（compaction 内核）和 pi-models-json-overri...（采纳 read）",
-   "expected": [
-    "pi-internal-all"
-   ],
-   "note": "本会话：消息模型调查采纳"
-  },
-  {
-   "id": "R08",
-   "verdict": "FP",
-   "input": "[叙述] 三条与当前问题关联不大（heredoc 拦截规则已领教），跳过",
-   "expected": [],
-   "note": "重复域噪音：已熟知的领域仍推"
-  },
-  {
-   "id": "R09",
-   "verdict": "TP",
-   "input": "[叙述] vitest-family-pitfalls read（vi.spyOn/doMock 陷阱相关）",
-   "expected": [
-    "vitest"
-   ],
-   "note": "本会话：vitest 陷阱场景精确命中"
-  },
-  {
-   "id": "R10",
-   "verdict": "TP",
-   "input": "[叙述] 主题「记忆检索·判定路由·llmjudge」准确命中 prompt 优化任务；shepherd-timing-blindspots 相关采纳 read，check-tool-docs-bugs 弱相关忽略",
-   "expected": [
-    "llmjudge"
-   ],
-   "note": "混合精度但主题准：1/2 候选相关——prompt 优化阶段的实时样本（16:31）"
-  },
-  {
-   "id": "R11",
-   "verdict": "FP",
-   "input": "[叙述] 主题「pi-context-manager·记忆检索·判定路由」对我（系统建设者）推已熟知的路由系统自身记忆（archaeology/context-persist），均忽略",
-   "expected": [],
-   "note": "元工作重复推：对建设者本人推系统自身记忆——与 R02/R05 同族（元叙述/元工作误命中）"
-  },
-  {
-   "id": "R12",
-   "verdict": "FP",
-   "input": "[叙述] 主题「记忆检索·判定路由·llmjudge」准，候选 code_recovery（会话恢复技术）与标注任务边缘无关——需求已由 session_analyze 覆盖，忽略",
-   "expected": [],
-   "note": "主题对资产错型：主题词命中但候选资产非任务所需（泛域资产抢占）"
-  },
-  {
-   "id": "R13",
-   "verdict": "TP",
-   "input": "[叙述] 1.4.2 验证阶段：主题「npm-update·记忆检索·判定路由」；read context-distill-design + memory-retrieval-archaeology，忽略 godot-mcp-bridge",
-   "expected": [
-    "npm-update"
-   ],
-   "note": "2/3 采纳——验证 ephemeral 链路时的相关命中"
-  },
-  {
-   "id": "R14",
-   "verdict": "FP",
-   "input": "[叙述] 验证收尾阶段：主题「pi-context-manager·记忆检索·判定路由」；候选 mcp_tool_traps/aging-exempt/context-persist 与验证任务无关，全忽略",
-   "expected": [],
-   "note": "read 操作的路径词触发泛域联想（read 记忆文件→推更多记忆）——自引用循环的代价"
-  },
-  {
-   "id": "R15",
-   "verdict": "TP",
-   "input": "[叙述] 修 settle 竞态阶段：主题「llmjudge串位·toolresult·记忆检索」；read pi_sdk_events（事件权威表）+ matchTargets(ENOENT 索引陈旧)，忽略 index-drift",
-   "expected": [
-    "toolresult"
-   ],
-   "note": "高价值命中：SDK 事件表正是修 bug 所需；词库牵引（串位）但无伤"
-  },
-  {
-   "id": "R16",
-   "verdict": "TP",
-   "input": "[叙述] 查消息模型阶段：主题「pi·hook·events」；read pi-internal-all（Message 模型）——正中根因调查",
-   "expected": [
-    "hook"
-   ],
-   "note": "精确命中：ToolResultMessage.content=text 块的真相来源"
-  },
-  {
-   "id": "R17",
-   "verdict": "TP",
-   "input": "[叙述] 修测试 TS 错阶段：主题「vitest·typecheck·mock策略」；read pi_pitfalls + vitest-family（spyOn/doMock 陷阱），忽略 git_workflow/npm-registry",
-   "expected": [
-    "vitest",
-    "mock策略"
-   ],
-   "note": "双命中高价值：正踩坑时推陷阱清单——理想 TP 形态"
-  },
-  {
-   "id": "R18",
-   "verdict": "TP",
-   "input": "[叙述] 写 dump 测试阶段：主题「mock策略·toolresult·message_end」；read 跨包重复治理（mock 实例隔离）",
-   "expected": [
-    "mock策略"
-   ],
-   "note": "渐进追踪：主题词随工作演进（npm→vitest→mock）——判定器跟上了工作流"
-  },
-  {
-   "id": "R19",
-   "verdict": "FP",
-   "input": "[叙述] 组织数据集阶段：主题「mock策略·typecheck·vitest」（1.5.0 发版后收尾时）——当时任务已转数据标注，无候选命中当前需求",
-   "expected": [],
-   "note": "滞后命中：主题词反映上一阶段工作（发版/测试），与当前标注任务错位——判定窗口的时滞代价"
-  },
-  {
-   "id": "R20",
-   "verdict": "FP",
-   "input": "[叙述] wayfinding 收尾：openspec-opsx 提示但会话早期已装载（chart 上膛阶段经 prompt 注入），jud判无新信息；distill 设计/MCP processor 与 apply 时序无涉",
-   "expected": [],
-   "note": "readTracker 盲区：非 read 通道的知识装载（prompt 注入/技能加载）不追踪——已知内容仍推（FP 模式⑤）"
-  },
-  {
-   "id": "R21",
-   "verdict": "TP",
-   "input": "[叙述] 子代理（只读工具面）收 16+ 次注入逐一判断：openspec-opsx 读之（任务直接相关）",
-   "expected": [
-    "openspec-opsx"
-   ],
-   "note": "子代理侧验证：注入对只读侦察型子代理同样可达且可采纳（11-24 15:06，1.4.x 前时代）"
-  },
-  {
-   "id": "R22",
-   "verdict": "TP",
-   "input": "[叙述] pi-skill-globalization（三载体同步）、prompt-template-no-angle-brackets（brief 模板）、subagent-mechanism（A6 实测）三资产相关，读",
-   "expected": [
-    "skill"
-   ],
-   "note": "一批三中：openspec 收尾设计任务的知识需求面"
-  },
-  {
-   "id": "R23",
-   "verdict": "TP+FP",
-   "input": "[叙述] subagent-spawn-runtime/spec.md（OutputConstraint 正式契约）与 subagent-timeout-config 相关，读；mdbook/sendUserMessage/roadmap-planpath/pi-intercom-hoist 四条无关忽略",
-   "expected": [],
-   "note": "同批 2 中 4 错——spec 资产命中价值高但泛域记忆污染同批"
-  },
-  {
-   "id": "R24",
-   "verdict": "TP",
-   "input": "[叙述] D13 聚合条款相关的 ask-user-cr-pollution 系记忆相关，读；fork-dual-module-instance/pi_sdk_events 判断无涉忽略",
-   "expected": [
-    "ask-user"
-   ],
-   "note": "设计判据型命中：正在设计 D13 时推相关实证记忆"
-  },
-  {
-   "id": "R25",
-   "verdict": "FP",
-   "input": "[叙述] mdbook 资产五次判无关仍反复推（叙述原话：'mdbook 记忆已五次判无关'）",
-   "expected": [],
-   "note": "重复轰炸铁证（1.4.0 前无已提示集合时代）——同资产推≥5 次；已提示集合修复的直接动机"
-  },
-  {
-   "id": "R26",
-   "verdict": "FP",
-   "input": "[叙述] aging-exempt-semantics 六次判无关仍推（叙述原话：'已三次无关'→'已五次无关'→'已六次无关'）",
-   "expected": [],
-   "note": "最严重重复轰炸样本：同一资产单会话内推≥6 次；AI 被迫每次叙述'再次无关'——这些叙述又入池引发新判定（自引用循环实证）"
-  },
-  {
-   "id": "R27",
-   "verdict": "FP",
-   "input": "[叙述] roadmap-planpath 多次推均忽略；atelier-book-philosophy 两次无关仍推",
-   "expected": [],
-   "note": "泛域文档类资产（roadmap/mdbook/书本哲学）在 opsx 收尾任务中的系统性误命中——'任务涉及文档工作→推文档记忆'的域联想错误"
-  },
-  {
-   "id": "R28",
-   "verdict": "FP",
-   "input": "[叙述] code_recovery、roadmap-eid 无关忽略；arch-guard、godot-bridge 与 opsx 收尾无关忽略",
-   "expected": [],
-   "note": "跨域资产噪声：代码恢复/git 历史域与纯设计推演任务的错配"
-  },
-  {
-   "id": "R29",
-   "verdict": "FP",
-   "input": "[叙述] codegraph-all、duckdb-large-table-ops、shepherd-rule-writing 三条无关忽略；mcp_tool_traps/context-distill-design 与纯设计推演无关忽略",
-   "expected": [],
-   "note": "子代理侦察叙述中的技术词（find/grep/schema）触发基础设施类记忆联想——工具操作叙述的词汇面误命中"
-  },
-  {
-   "id": "R31",
-   "verdict": "TP+FP",
-   "input": "[叙述] 主题前3词准（记忆检索·判定路由·session_search，采纳 read session-search-grep-preview）；候选 feishu-gateway-impl 无关——日志实证：实际选词 5 个，第 4 词「话题绑定」（叙述中无此概念，词库牵引）倒排命中 feishu",
-   "expected": [],
-   "note": "双坐实：①词库牵引（判定器联想词库而非叙述实义）；②展示截断（slice(0,3) 隐藏促成匹配的词——可解释性缺口）；另发现 batch-9b576ca1 选了 read,write,bash 工具名当选词（泛词形态）"
-  }
- ]
+  "generated": "2026-11-24",
+  "source": "R01-R32 verdicts",
+  "cases": [
+    {
+      "id": "R01",
+      "verdict": "TP",
+      "input": "[叙述] mona-extension-kernel-build（wasm-bindgen 相关）——这是项目记忆",
+      "expected": [
+        "openspec-opsx"
+      ],
+      "note": "半采纳：确认相关性"
+    },
+    {
+      "id": "R02",
+      "verdict": "FP",
+      "input": "[叙述] 记忆路由那条与本诊断无关，忽略",
+      "expected": [],
+      "note": "诊断会话的元叙述被误命中"
+    },
+    {
+      "id": "R03",
+      "verdict": "FP",
+      "input": "[叙述] 两个新文件与本手术无关（Godot bridge/工具输出格式化），忽略",
+      "expected": [],
+      "note": "quant 手术会话，跨域词误命中"
+    },
+    {
+      "id": "R04",
+      "verdict": "TP+FP",
+      "input": "[叙述] openspec-opsx 与本任务直接相关，另两个（arch-guard、godot-bridge）与任务无关",
+      "expected": [
+        "opsx"
+      ],
+      "note": "混合批：openspec-opsx 相关侧读之（input 明示）——期望=识别相关侧；arch-guard/godot 无关侧不选。原 expected=[] 为 stem 词形错标（2026-11-24 修正）｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R05",
+      "verdict": "FP",
+      "input": "[叙述] 三份资产与本审计任务（fold 六条件凭证核查）无关，忽略",
+      "expected": [],
+      "note": "审计元叙述"
+    },
+    {
+      "id": "R06",
+      "verdict": "TP",
+      "input": "[叙述] subagent-mechanism 和 memory-retrieval-archaeology（下略）",
+      "expected": [],
+      "note": "wayfinding 会话引用"
+    },
+    {
+      "id": "R07",
+      "verdict": "TP",
+      "input": "[叙述] pi-internal-all（compaction 内核）和 pi-models-json-override 与本任务相关，接下来查 pi 的消息模型与 compaction 行为",
+      "expected": [
+        "compaction"
+      ],
+      "note": "本会话：消息模型调查采纳；pi-internal-all 是 stem 不在词库，input 首句明示 compaction 内核（2026-11-24 修正）｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R08",
+      "verdict": "FP",
+      "input": "[叙述] 三条与当前问题关联不大（heredoc 拦截规则已领教），跳过",
+      "expected": [],
+      "note": "重复域噪音：已熟知的领域仍推"
+    },
+    {
+      "id": "R09",
+      "verdict": "TP",
+      "input": "[叙述] vitest-family-pitfalls 的 vi.spyOn/doMock 陷阱（ESM namespace 不可配，用模块级 vi.mock 工厂）",
+      "expected": [
+        "vitest"
+      ],
+      "note": "本会话：vitest 陷阱场景精确命中｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R10",
+      "verdict": "TP",
+      "input": "[叙述] 主题「记忆检索·判定路由·llmjudge」命中 prompt 优化任务；shepherd-timing-blindspots 相关；check-tool-docs-bugs 弱相关",
+      "expected": [
+        "llmjudge"
+      ],
+      "note": "混合精度但主题准：1/2 候选相关——prompt 优化阶段的实时样本（16:31）｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R11",
+      "verdict": "FP",
+      "input": "[叙述] 主题「pi-context-manager·记忆检索·判定路由」对我（系统建设者）推已熟知的路由系统自身记忆（archaeology/context-persist），均忽略",
+      "expected": [],
+      "note": "元工作重复推：对建设者本人推系统自身记忆——与 R02/R05 同族（元叙述/元工作误命中）"
+    },
+    {
+      "id": "R12",
+      "verdict": "FP",
+      "input": "[叙述] 主题「记忆检索·判定路由·llmjudge」准，候选 code_recovery（会话恢复技术）与标注任务边缘无关——需求已由 session_analyze 覆盖，忽略",
+      "expected": [],
+      "note": "主题对资产错型：主题词命中但候选资产非任务所需（泛域资产抢占）"
+    },
+    {
+      "id": "R13",
+      "verdict": "TP",
+      "input": "[叙述] npm install 报 ETARGET，需要 npm update @pi-atelier/shared-utils 拉新版本验证 ephemeral 链路",
+      "expected": [
+        "npm-update"
+      ],
+      "note": "2/3 采纳——验证 ephemeral 链路时的相关命中｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R14",
+      "verdict": "FP",
+      "input": "[叙述] 验证收尾阶段：主题「pi-context-manager·记忆检索·判定路由」；候选 mcp_tool_traps/aging-exempt/context-persist 与验证任务无关，全忽略",
+      "expected": [],
+      "note": "read 操作的路径词触发泛域联想（read 记忆文件→推更多记忆）——自引用循环的代价"
+    },
+    {
+      "id": "R15",
+      "verdict": "TP",
+      "input": "[叙述] 查消息模型阶段：pi-internal-all（Message 模型）正中根因调查，查 pi 的 hook 事件语义",
+      "expected": [
+        "toolresult"
+      ],
+      "note": "高价值命中：SDK 事件表正是修 bug 所需；词库牵引（串位）但无伤｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R16",
+      "verdict": "TP",
+      "input": "[叙述] 修 settle 竞态阶段：主题「llmjudge串位·toolresult·记忆检索」；pi_sdk_events（事件权威表）+ matchTargets（ENOENT 索引陈旧待修）",
+      "expected": [
+        "hook"
+      ],
+      "note": "精确命中：ToolResultMessage.content=text 块的真相来源｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R17",
+      "verdict": "TP",
+      "input": "[叙述] 修测试 TS 错阶段：主题「vitest·typecheck·mock策略」；pi_pitfalls + vitest-family（spyOn/doMock 陷阱）是主要参考",
+      "expected": [
+        "vitest",
+        "mock策略"
+      ],
+      "note": "双命中高价值：正踩坑时推陷阱清单——理想 TP 形态｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R18",
+      "verdict": "TP",
+      "input": "[叙述] 写 dump 测试阶段：主题「mock策略·toolresult·message_end」；跨包重复治理（mock 实例隔离）是关键模式来源",
+      "expected": [
+        "mock策略"
+      ],
+      "note": "渐进追踪：主题词随工作演进（npm→vitest→mock）——判定器跟上了工作流｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R19",
+      "verdict": "FP",
+      "input": "[叙述] 组织数据集阶段：主题「mock策略·typecheck·vitest」（1.5.0 发版后收尾时）——当时任务已转数据标注，无候选命中当前需求",
+      "expected": [],
+      "note": "滞后命中：主题词反映上一阶段工作（发版/测试），与当前标注任务错位——判定窗口的时滞代价"
+    },
+    {
+      "id": "R20",
+      "verdict": "FP",
+      "input": "[叙述] wayfinding 收尾：openspec-opsx 提示但会话早期已装载（chart 上膛阶段经 prompt 注入），jud判无新信息；distill 设计/MCP processor 与 apply 时序无涉",
+      "expected": [],
+      "note": "readTracker 盲区：非 read 通道的知识装载（prompt 注入/技能加载）不追踪——已知内容仍推（FP 模式⑤）"
+    },
+    {
+      "id": "R21",
+      "verdict": "TP",
+      "input": "[叙述] openspec-opsx 与任务直接相关，子代理正在处理 openspec 流程任务",
+      "expected": [
+        "opsx"
+      ],
+      "note": "子代理侧验证：注入对只读侦察型子代理可达可采纳；stem→kw 词形修正（2026-11-24）｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R22",
+      "verdict": "TP",
+      "input": "[叙述] pi-skill-globalization（三载体同步）、prompt-template-no-angle-brackets（brief 模板）、subagent-mechanism（A6 实测）三资产与当前任务相关",
+      "expected": [
+        "skill"
+      ],
+      "note": "一批三中：openspec 收尾设计任务的知识需求面｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R23",
+      "verdict": "TP+FP",
+      "input": "[叙述] subagent-spawn-runtime/spec.md（OutputConstraint 正式契约）与 subagent-timeout-config 相关，读；mdbook/sendUserMessage/roadmap-planpath/pi-intercom-hoist 四条无关忽略",
+      "expected": [],
+      "note": "同批 2 中 4 错——spec 资产命中价值高但泛域记忆污染同批"
+    },
+    {
+      "id": "R24",
+      "verdict": "TP",
+      "input": "[叙述] D13 聚合条款相关的 ask-user-cr-pollution 系记忆与当前工作相关；fork-dual-module-instance/pi_sdk_events 判断无涉",
+      "expected": [
+        "ask-user"
+      ],
+      "note": "设计判据型命中：正在设计 D13 时推相关实证记忆｜形态修复：剥离反应注记（探针实证 01a2065c）"
+    },
+    {
+      "id": "R25",
+      "verdict": "SKIP",
+      "input": "[叙述] mdbook 资产五次判无关仍反复推（叙述原话：'mdbook 记忆已五次判无关'）",
+      "expected": [],
+      "note": "SKIP：重复轰炸类——判定器无提示历史感知（PromptedSet 程序层职责，1.4.0 已修）；保留为文档样本，退出评分"
+    },
+    {
+      "id": "R26",
+      "verdict": "SKIP",
+      "input": "[叙述] aging-exempt-semantics 六次判无关仍推（叙述原话：'已三次无关'→'已五次无关'→'已六次无关'）",
+      "expected": [],
+      "note": "SKIP：同 R25，自引用循环实证样本；程序层已修，退出评分"
+    },
+    {
+      "id": "R27",
+      "verdict": "SKIP",
+      "input": "[叙述] roadmap-planpath 多次推均忽略；atelier-book-philosophy 两次无关仍推",
+      "expected": [],
+      "note": "SKIP：域联想误推类（任务涉及文档→推文档记忆）+ 轰炸；提示历史依赖，退出评分"
+    },
+    {
+      "id": "R28",
+      "verdict": "FP",
+      "input": "[叙述] code_recovery、roadmap-eid 无关忽略；arch-guard、godot-bridge 与 opsx 收尾无关忽略",
+      "expected": [],
+      "note": "跨域资产噪声：代码恢复/git 历史域与纯设计推演任务的错配"
+    },
+    {
+      "id": "R29",
+      "verdict": "FP",
+      "input": "[叙述] codegraph-all、duckdb-large-table-ops、shepherd-rule-writing 三条无关忽略；mcp_tool_traps/context-distill-design 与纯设计推演无关忽略",
+      "expected": [],
+      "note": "子代理侦察叙述中的技术词（find/grep/schema）触发基础设施类记忆联想——工具操作叙述的词汇面误命中"
+    },
+    {
+      "id": "R31",
+      "verdict": "TP+FP",
+      "input": "[叙述] 主题前3词准（记忆检索·判定路由·session_search，采纳 read session-search-grep-preview）；候选 feishu-gateway-impl 无关——日志实证：实际选词 5 个，第 4 词「话题绑定」（叙述中无此概念，词库牵引）倒排命中 feishu",
+      "expected": [],
+      "note": "双坐实：①词库牵引（判定器联想词库而非叙述实义）；②展示截断（slice(0,3) 隐藏促成匹配的词——可解释性缺口）；另发现 batch-9b576ca1 选了 read,write,bash 工具名当选词（泛词形态）"
+    }
+  ]
 }
