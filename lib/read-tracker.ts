@@ -47,6 +47,11 @@ export class ReadTracker {
 		return false;
 	}
 
+	/** 恢复持久化状态（sid 绑定时调用；入参为已归一化集合，再走一次幂等） */
+	restore(paths: readonly string[]): void {
+		for (const p of paths) this.readPaths.add(normalizePath(p));
+	}
+
 	/** 快照（诊断用） */
 	snapshot(): readonly string[] {
 		return [...this.readPaths];

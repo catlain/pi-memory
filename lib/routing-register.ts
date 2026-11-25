@@ -30,7 +30,12 @@ export function registerRouting(pi: ExtensionAPI): void {
 	const pendingTools = new Map<string, { toolName: string; args: unknown }>();
 
 	pi.on("message_end", async (event: unknown, ctx: unknown) => {
-		if (ctx) router.setJudgeContext(ctx);
+		if (ctx) {
+			router.setJudgeContext(ctx);
+			// R33：恢复同 sid 的已读/已推状态（幂等；message_end[assistant] 必先于首次 tool_result）
+			const sid = (ctx as { sessionManager?: { getSessionId?: () => string } }).sessionManager?.getSessionId?.();
+			if (sid) router.bindSession(sid);
+		}
 		if (cfg.dumpEvents) dumpEvent("message_end", event);
 		router.accumulate(event as { message?: { content?: unknown } });
 		// 同步判定（对齐 shepherd 归因猜测模式）：settle 前完成；含 toolCall = 工具循环中间，注入由下一次循环请求自然 drain，不走 settle 链路
@@ -56,6 +61,7 @@ export function registerRouting(pi: ExtensionAPI): void {
 		pendingTools.delete(toolCallId!);
 		router.observeToolResult(rec.toolName, rec.args, isError === true, result);
 		router.readTracker.recordRead(rec.toolName ?? "", rec.args, isError === true);
+		router.persistState();
 	});
 
 	pi.registerCommand("memory-routing", {

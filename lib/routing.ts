@@ -10,6 +10,7 @@ import { createReadTracker } from "./read-tracker";
 import { loadConfig, setRoutingConfig, type RoutingConfig } from "./routing-config";
 import { SignalPool } from "./signal-pool";
 import { PromptedSet } from "./prompted-set";
+import { loadRoutingState, purgeStaleStates, saveRoutingState } from "./routing-state";
 
 export { loadConfig, setRoutingConfig };
 
@@ -34,9 +35,12 @@ export class MemoryRouter {
 	private judgeInstance: JudgeInstance<string[]> | null = null;
 	private topicJudge: JudgeInstance<string[]> | null = null;
 	private pendingCtx: unknown = null;
-	private prompted = new PromptedSet();
+	readonly prompted = new PromptedSet();
 	/** 待注入计数：agent_before_settle 读到即消费（单次 continue），驱动下一 provider request */
 	private pendingHintCount = 0;
+	/** R33：session 级持久化绑定（首事件惰性恢复，重启不清零） */
+	private sessionId: string | null = null;
+	private stateDir: string | null = null;
 
 	readonly readTracker = createReadTracker();
 
@@ -46,6 +50,29 @@ export class MemoryRouter {
 
 	setConfig(cfg: RoutingConfig): void {
 		this.config = { ...cfg };
+	}
+
+	/** 绑定 session（幂等）：恢复已读/已推状态 + 顺扫过期残留（R33：重启清零修复） */
+	bindSession(sid: string, stateDir?: string): void {
+		if (this.sessionId === sid && !stateDir) return;
+		this.sessionId = sid;
+		this.stateDir = stateDir ?? null;
+		const st = loadRoutingState(sid, stateDir);
+		if (st) {
+			this.readTracker.restore(st.readPaths);
+			this.prompted.restore(st.prompted);
+		}
+		purgeStaleStates();
+	}
+
+	/** 持久化当前状态（状态变更点后触发；未绑 sid 时 no-op） */
+	persistState(): void {
+		if (!this.sessionId) return;
+		saveRoutingState(this.sessionId, {
+			readPaths: [...this.readTracker.snapshot()],
+			prompted: [...this.prompted.snapshot()],
+			ts: Date.now(),
+		}, this.stateDir ?? undefined);
 	}
 
 	/** message_end 事件的 ExtensionContext —— judge 调 LLM 的必要通道，首个事件到达时注入 */
@@ -110,6 +137,7 @@ export class MemoryRouter {
 			if (!this.config.enabled) return; // emit 前飞行拦截（off 后判定返回时拦截）
 
 			for (const a of candidates) this.prompted.add(a.entry);
+			this.persistState();
 			pi.events.emit("ephemeral:hint", buildHintText(candidates, keywords, this.cwd));
 			// 回合末才 settle-continue；工具循环中间的注入由下一循环请求自然 drain
 			if (opts?.endOfTurn !== false) this.pendingHintCount = 1;

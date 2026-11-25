@@ -21,6 +21,16 @@ export class PromptedSet {
 		}
 	}
 
+	/** 恢复持久化状态（按序 add，FIFO 淘汰语义保持） */
+	restore(entries: readonly string[]): void {
+		for (const e of entries) this.add(e);
+	}
+
+	/** 快照（持久化/诊断用） */
+	snapshot(): readonly string[] {
+		return [...this.set];
+	}
+
 	get size(): number {
 		return this.set.size;
 	}

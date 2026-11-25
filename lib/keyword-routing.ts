@@ -40,6 +40,7 @@ export function parseTopics(raw: string): string[] | null {
 				.replace(/[*#`>_]+/g, "")
 				.replace(/^\s*\d+[.、)）]\s*/, "")
 				.replace(/^[-–—·•]\s*/, "")
+				.replace(/[:：→]+$/, "") // 尾部冒号/箭头残渣（冒烟 L1356 实证）
 				.replace(/^[-–—·•\s]+$/, "")
 				.trim(),
 		)
@@ -92,7 +93,7 @@ export function buildHintText(
 		})
 		.join("\n");
 	const stems = candidates.map((a) => (a.entry.split("/").pop() ?? "").split("--")[0]).join("、");
-	const theme = keywords.slice(0, 3).join("·");
+	const theme = keywords.join("·"); // R33：展示全词（slice(0,3) 截断隐藏促成匹配的词，可解释性缺口）
 	return {
 		text:
 			`💡 记忆路由：从你近期的工作记录（叙述/工具操作/报错）中识别出主题「${theme}」，` +
