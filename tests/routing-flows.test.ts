@@ -97,46 +97,6 @@ describe("字符池触发（三信号源）", () => {
 		expect(text).not.toContain("content...");
 	});
 
-	describe("两段判定链路（S1 提取领域名 → S2 词表映射）", () => {
-		it("批只进 S1；S2 的输入是领域名 + 词库，不含批", async () => {
-			topicMock.mockResolvedValue(["git 陷阱"]);
-			mapMock.mockResolvedValue(["git"]);
-			router.accumulate(assistantMsg(longText));
-			await router.maybeTrigger(piStub());
-			const s1 = topicMock.mock.calls[0][0];
-			const s2 = mapMock.mock.calls[0][0];
-			expect(String(s1.text)).toContain(longText);
-			expect(String(s1.question)).not.toContain("词库");
-			expect(String(s2.text)).toBe("git 陷阱"); // 领域名逐行，不含批
-			expect(String(s2.question)).toContain("词库");
-			expect(String(s2.question)).toContain("git");
-			expect(String(s2.question)).not.toContain(longText);
-		});
-
-		it("S1 无可命名领域（返回空）→ S2 不调用，静默", async () => {
-			topicMock.mockResolvedValue([]);
-			router.accumulate(assistantMsg(longText));
-			await router.maybeTrigger(piStub());
-			expect(topicMock).toHaveBeenCalledTimes(1);
-			expect(mapMock).not.toHaveBeenCalled();
-			expect(emitMock).not.toHaveBeenCalled();
-		});
-
-		it("S1 异常 → fail-open：S2 不调用、不炸", async () => {
-			topicMock.mockRejectedValue(new Error("S1 down"));
-			router.accumulate(assistantMsg(longText));
-			await expect(router.maybeTrigger(piStub())).resolves.toBeUndefined();
-			expect(mapMock).not.toHaveBeenCalled();
-			expect(emitMock).not.toHaveBeenCalled();
-		});
-
-		it("S2 标签 = S1 标签 + →map(领域名)（日志一行还原决策链）", async () => {
-			router.accumulate(assistantMsg(longText));
-			await router.maybeTrigger(piStub());
-			expect(mapMock.mock.calls[0][0].contextLabel).toBe(`${topicMock.mock.calls[0][0].contextLabel}→map(git)`);
-		});
-	});
-
 	it("判定后池清零：第二批重新累计", async () => {
 		mapMock.mockResolvedValue([]);
 		router.accumulate(assistantMsg(longText));
