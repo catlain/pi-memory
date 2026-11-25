@@ -1,0 +1,588 @@
+[
+ {
+  "id": "00",
+  "exp": [
+   "opsx"
+  ],
+  "s1": [
+   "opsx-sweep",
+   "opsx-fold",
+   "opsx-review",
+   "subagent防锚定机制",
+   "OpenSpec变更生命周期"
+  ],
+  "picked": [
+   "openspec",
+   "opsx",
+   "审阅",
+   "归档"
+  ],
+  "ok": true
+ },
+ {
+  "id": "01",
+  "exp": [
+   "opsx"
+  ],
+  "s1": [
+   "OpenSpec 变更管理流程（map/fold 记录结构）",
+   "opsx 命令族（sweep/fold 会话工作流）",
+   "变更拆分协议（daemon 系列变更）"
+  ],
+  "picked": [
+   "openspec、opsx"
+  ],
+  "ok": true
+ },
+ {
+  "id": "02",
+  "exp": [
+   "opsx"
+  ],
+  "s1": [
+   "opsx-sweep",
+   "opsx-fold",
+   "opsx-review",
+   "子代理审查机制",
+   "change artifacts 流程闸门设计"
+  ],
+  "picked": [
+   "openspec",
+   "opsx",
+   "审阅",
+   "源码验证",
+   "子代理"
+  ],
+  "ok": true
+ },
+ {
+  "id": "03",
+  "exp": [
+   "子代理"
+  ],
+  "s1": [
+   "子代理架构设计",
+   "上下文工程（子代理上下文经济）",
+   "对抗性审计/盲推",
+   "openspec 规范单源治理",
+   "复杂度守恒与过度设计判据"
+  ],
+  "picked": [
+   "subagent",
+   "pi-context-manager",
+   "llm-judge",
+   "openspec",
+   "坏味道"
+  ],
+  "ok": false
+ },
+ {
+  "id": "04",
+  "exp": [],
+  "s1": [
+   "pi-intercom（contact_supervisor / interview_request 桥接机制）",
+   "子代理任务委托架构（判据 A / 判据 B，主会话 vs 子代理分工）",
+   "fold 工作流改造（审计 SG、propose 子代理化、review 闸门）"
+  ],
+  "picked": [
+   "pi-intercom",
+   "intercom",
+   "subagent-supervisor-bridge",
+   "subagent",
+   "subagent-spawn-runtime"
+  ],
+  "ok": false
+ },
+ {
+  "id": "05",
+  "exp": [
+   "pi-intercom"
+  ],
+  "s1": [
+   "interview_request 题型结构",
+   "pi-intercom 工具注册机制",
+   "子代理回流通道架构",
+   "上下文经济子代理模式"
+  ],
+  "picked": [
+   "pi-intercom",
+   "intercom",
+   "subagent",
+   "subagent-spawn-runtime",
+   "supervisor-bridge",
+   "subagent",
+   "compaction",
+   "pi-context-manager"
+  ],
+  "ok": true
+ },
+ {
+  "id": "06",
+  "exp": [
+   "opsx"
+  ],
+  "s1": [],
+  "picked": [],
+  "ok": false
+ },
+ {
+  "id": "07",
+  "exp": [
+   "opsx"
+  ],
+  "s1": [
+   "OpenSpec 变更管理",
+   "pi 子代理机制（pv-explorer / interview_request 回流链路）",
+   "子代理空输出故障模式",
+   "opsx 命令族架构设计"
+  ],
+  "picked": [
+   "openspec",
+   "子代理",
+   "subagent",
+   "opsx"
+  ],
+  "ok": true
+ },
+ {
+  "id": "08",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "09",
+  "exp": [
+   "opsx"
+  ],
+  "s1": [
+   "盲推对抗审查",
+   "子代理并发架构",
+   "多智能体协议设计",
+   "npm 依赖修改管理",
+   "增量验收方法"
+  ],
+  "picked": [],
+  "ok": false
+ },
+ {
+  "id": "10",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "11",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "12",
+  "exp": [],
+  "s1": [
+   "Subagent 架构设计（工具 schema 约束、任务派发/重派对账机制）",
+   "盲推/对抗式评审轮（Sweep rounds）",
+   "规格漂移回写消解（决策上游同步）",
+   "OpenSpec change map（Ledger/Decisions/Round Log 结构）"
+  ],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "13",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "14",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "15",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "16",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "17",
+  "exp": [
+   "opsx"
+  ],
+  "s1": [
+   "openspec 变更管理流程",
+   "wayfinding/fold 规划模式",
+   "子代理架构改造",
+   "狗粮（dogfooding）验证",
+   "ADR/决策记录沉淀"
+  ],
+  "picked": [
+   "openspec",
+   "子代理",
+   "subagent",
+   "inv-adr",
+   "决策沉淀"
+  ],
+  "ok": true
+ },
+ {
+  "id": "18",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "19",
+  "exp": [],
+  "s1": [
+   "OpenSpec propose 流程子代理化",
+   "上下文经济与换会话策略",
+   "Affects-subsystem 标签闸门机制"
+  ],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "20",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "21",
+  "exp": [],
+  "s1": [
+   "OpenSpec 变更工作流（C1-C5 流水线、Fold Record、archive 预案）",
+   "memory_index / memory_update 记忆沉淀机制（L1/L2 scope 路由）",
+   "子代理无先验审查（pv-reviewer 冷材料审查包）"
+  ],
+  "picked": [
+   "openspec",
+   "记忆",
+   "蒸馏",
+   "archive",
+   "子代理"
+  ],
+  "ok": false
+ },
+ {
+  "id": "22",
+  "exp": [],
+  "s1": [
+   "OpenSpec 规格文档修订",
+   "子代理运行模式（once 后台 / visible 分屏）",
+   "exitCode/stderr 假成功判定链路",
+   "npm 版本号核查（registry 与本地预占）",
+   "JSON 转义污染修复（ask_user_question 格式）"
+  ],
+  "picked": [
+   "openspec",
+   "子代理、spawn-runtime、blocking-wait",
+   "registry、npm-update、lock",
+   "cr污染、ask_user_question"
+  ],
+  "ok": false
+ },
+ {
+  "id": "23",
+  "exp": [],
+  "s1": [
+   "OpenSpec change 管理与 validate 流程",
+   "subagent-spawn-runtime 规约设计",
+   "vitest 测试与 npm 发版流程"
+  ],
+  "picked": [
+   "openspec",
+   "subagent-spawn-runtime",
+   "spawn-runtime",
+   "vitest",
+   "npm-publish"
+  ],
+  "ok": false
+ },
+ {
+  "id": "24",
+  "exp": [
+   "opsx"
+  ],
+  "s1": [
+   "自举流程（bootstrapping）",
+   "子代理任务书派发（手动挡执行模式）",
+   "apply 命令子代理化架构",
+   "npm 发版流程（不可逆动作确认）"
+  ],
+  "picked": [
+   "subagent",
+   "spawn架构",
+   "thin-shell",
+   "npm-publish",
+   "release-gate"
+  ],
+  "ok": false
+ },
+ {
+  "id": "25",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "26",
+  "exp": [],
+  "s1": [
+   "子代理环境变量继承机制",
+   "spec 与实现一致性校准",
+   "预存红测试根因分析",
+   "断言语义修复（objectContaining 环境覆盖冲突）"
+  ],
+  "picked": [
+   "env-injection",
+   "subagent",
+   "consistency",
+   "根因",
+   "遗留测试",
+   "覆盖"
+  ],
+  "ok": false
+ },
+ {
+  "id": "27",
+  "exp": [],
+  "s1": [
+   "subagent 失败分类与重试机制",
+   "npm 发布与 npmmirror 镜像同步",
+   "openspec 规范校验"
+  ],
+  "picked": [
+   "subagent",
+   "subagent-spawn-runtime",
+   "subagent-timeout-config",
+   "npm-publish",
+   "prepublish",
+   "registry",
+   "openspec",
+   "opsx"
+  ],
+  "ok": false
+ },
+ {
+  "id": "28",
+  "exp": [
+   "npm"
+  ],
+  "s1": [],
+  "picked": [],
+  "ok": false
+ },
+ {
+  "id": "29",
+  "exp": [],
+  "s1": [
+   "npm registry 传播延迟与镜像同步",
+   "npm 版本核对与发布流程"
+  ],
+  "picked": [
+   "registry延迟",
+   "npm-update",
+   "镜像",
+   "npm-publish",
+   "prepublish"
+  ],
+  "ok": false
+ },
+ {
+  "id": "30",
+  "exp": [],
+  "s1": [
+   "opsx-subarch-infrastructure C2 实施",
+   "subagent 工具白名单与隔离验证（F2）",
+   "subagent 超时/失败档分类与重试机制（F1/A6）",
+   "opsx-judge 新壳首次发现机制验证"
+  ],
+  "picked": [
+   "openspec",
+   "opsx",
+   "subagent",
+   "tools白名单",
+   "沙箱隔离",
+   "subagent-timeout-config",
+   "超时",
+   "timeout",
+   "llmjudge",
+   "firstseencap",
+   "自发现"
+  ],
+  "ok": false
+ },
+ {
+  "id": "31",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "32",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "33",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "34",
+  "exp": [
+   "opsx"
+  ],
+  "s1": [
+   "openspec frontmatter keywords 约定",
+   "pi-memory 词表路由/召回",
+   "跨会话协调",
+   "spec-driven 模板改造",
+   "存量 specs backfill"
+  ],
+  "picked": [
+   "openspec",
+   "opsx",
+   "记忆检索",
+   "跨会话",
+   "模板"
+  ],
+  "ok": true
+ },
+ {
+  "id": "35",
+  "exp": [],
+  "s1": [
+   "OpenSpec 规格驱动开发（openspec 命令集改造）",
+   "Subagent 协作编排与门禁验收（三档验收口径）"
+  ],
+  "picked": [
+   "openspec",
+   "opsx",
+   "subagent",
+   "subagent-spawn-runtime",
+   "spawn架构"
+  ],
+  "ok": false
+ },
+ {
+  "id": "36",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "37",
+  "exp": [],
+  "s1": [
+   "frontmatter keywords backfill",
+   "openspec",
+   "YAML frontmatter",
+   "memory-routing 召回"
+  ],
+  "picked": [
+   "openspec"
+  ],
+  "ok": false
+ },
+ {
+  "id": "38",
+  "exp": [],
+  "s1": [
+   "pre-commit hooks",
+   "OpenSpec 规范（spec.md 门禁）",
+   "frontmatter 格式",
+   "mtime 并发窗口（session-locks）"
+  ],
+  "picked": [
+   "pre-commit",
+   "openspec",
+   "opsx",
+   "锁协调"
+  ],
+  "ok": false
+ },
+ {
+  "id": "39",
+  "exp": [],
+  "s1": [
+   "OpenSpec 规范文档 frontmatter 治理",
+   "pre-commit 门禁脚本（check_spec_purpose.py）",
+   "YAML frontmatter 格式规范",
+   "spec keywords 语义提炼/回填（backfill）",
+   "多代理共享工作区协作"
+  ],
+  "picked": [
+   "openspec",
+   "pre-commit",
+   "共享工作区",
+   "协作"
+  ],
+  "ok": false
+ },
+ {
+  "id": "40",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "41",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "42",
+  "exp": [],
+  "s1": [],
+  "picked": [],
+  "ok": true
+ },
+ {
+  "id": "43",
+  "exp": [],
+  "s1": [
+   "OpenSpec change 编写规范",
+   "subagent 架构任务拆分",
+   "狗粮验收（dogfooding）测试计划"
+  ],
+  "picked": [
+   "openspec",
+   "opsx",
+   "subagent",
+   "spawn架构",
+   "冒烟"
+  ],
+  "ok": false
+ }
+]

@@ -1,0 +1,256 @@
+{
+ "when": "2026-11-24T12:07:20.549Z",
+ "results": {
+  "v6": {
+   "17": {
+    "ok": true,
+    "ans": [
+     "openspec"
+    ],
+    "expected": [
+     "opsx"
+    ]
+   },
+   "19": {
+    "ok": false,
+    "ans": [
+     "subagent"
+    ],
+    "expected": []
+   },
+   "23": {
+    "ok": false,
+    "ans": [
+     "openspec"
+    ],
+    "expected": []
+   },
+   "28": {
+    "ok": false,
+    "ans": [
+     "npm-publish"
+    ],
+    "expected": [
+     "npm"
+    ]
+   },
+   "34": {
+    "ok": true,
+    "ans": [
+     "openspec"
+    ],
+    "expected": [
+     "opsx"
+    ]
+   },
+   "36": {
+    "ok": false,
+    "ans": [
+     "git"
+    ],
+    "expected": []
+   },
+   "39": {
+    "ok": true,
+    "ans": [],
+    "expected": []
+   },
+   "42": {
+    "ok": false,
+    "ans": [
+     "bash"
+    ],
+    "expected": []
+   },
+   "00": {
+    "ok": true,
+    "ans": [
+     "openspec"
+    ],
+    "expected": [
+     "opsx"
+    ]
+   },
+   "05": {
+    "ok": true,
+    "ans": [
+     "pi-intercom"
+    ],
+    "expected": [
+     "pi-intercom"
+    ]
+   }
+  },
+  "v71": {
+   "17": {
+    "ok": true,
+    "ans": [
+     "openspec"
+    ],
+    "expected": [
+     "opsx"
+    ]
+   },
+   "19": {
+    "ok": false,
+    "ans": [
+     "subagent"
+    ],
+    "expected": []
+   },
+   "23": {
+    "ok": false,
+    "ans": [
+     "openspec"
+    ],
+    "expected": []
+   },
+   "28": {
+    "ok": false,
+    "ans": [
+     "pi-workflow"
+    ],
+    "expected": [
+     "npm"
+    ]
+   },
+   "34": {
+    "ok": true,
+    "ans": [
+     "openspec"
+    ],
+    "expected": [
+     "opsx"
+    ]
+   },
+   "36": {
+    "ok": false,
+    "ans": [
+     "git"
+    ],
+    "expected": []
+   },
+   "39": {
+    "ok": false,
+    "ans": [
+     "pre-commit"
+    ],
+    "expected": []
+   },
+   "42": {
+    "ok": false,
+    "ans": [
+     "openspec"
+    ],
+    "expected": []
+   },
+   "00": {
+    "ok": true,
+    "ans": [
+     "openspec"
+    ],
+    "expected": [
+     "opsx"
+    ]
+   },
+   "05": {
+    "ok": false,
+    "ans": [
+     "pi-workflow"
+    ],
+    "expected": [
+     "pi-intercom"
+    ]
+   }
+  },
+  "v61": {
+   "17": {
+    "ok": true,
+    "ans": [
+     "openspec"
+    ],
+    "expected": [
+     "opsx"
+    ]
+   },
+   "19": {
+    "ok": false,
+    "ans": [
+     "openspec"
+    ],
+    "expected": []
+   },
+   "23": {
+    "ok": false,
+    "ans": [
+     "openspec"
+    ],
+    "expected": []
+   },
+   "28": {
+    "ok": true,
+    "ans": [
+     "镜像",
+     "npm-publish",
+     "registry延迟",
+     "prepublish"
+    ],
+    "expected": [
+     "npm"
+    ]
+   },
+   "34": {
+    "ok": true,
+    "ans": [
+     "openspec"
+    ],
+    "expected": [
+     "opsx"
+    ]
+   },
+   "36": {
+    "ok": false,
+    "ans": [
+     "openspec"
+    ],
+    "expected": []
+   },
+   "39": {
+    "ok": true,
+    "ans": [],
+    "expected": []
+   },
+   "42": {
+    "ok": false,
+    "ans": [
+     "openspec",
+     "opsx",
+     "catlain",
+     "bash"
+    ],
+    "expected": []
+   },
+   "00": {
+    "ok": true,
+    "ans": [
+     "openspec"
+    ],
+    "expected": [
+     "opsx"
+    ]
+   },
+   "05": {
+    "ok": true,
+    "ans": [
+     "pi-intercom"
+    ],
+    "expected": [
+     "pi-intercom"
+    ]
+   }
+  }
+ },
+ "s6": 5,
+ "s7": 3,
+ "s61": 6
+}
